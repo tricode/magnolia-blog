@@ -76,12 +76,12 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 		//TODO Check to make the bootstrap task more generic.
 		if (ctx.getHierarchyManager("config").isExist("/modules/tricode-tags")) {
 			log.info("Bootstrapping optional Tricode Tags for Tricode Blogs");
-			tasks.add(new BootstrapSingleResource("Tricode news optional Tags", "Bootstrap the optional tab for Tags", "/mgnl-bootstrap/optional/tricode-tags/config.modules.tricode-blogs.apps.tricode-blogs.subApps.detail.editor.form.tabs.tagstab.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REPLACE_EXISTING));
+			tasks.add(new BootstrapSingleResource("Tricode news optional Tags", "Bootstrap the optional tab for Tags", "/mgnl-bootstrap/optional/tricode-tags/config.modules.magnolia-blogs-module.apps.tricode-blogs.subApps.detail.editor.form.tabs.tagstab.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REPLACE_EXISTING));
 		}
 
 		if (ctx.getHierarchyManager("config").isExist("/modules/tricode-categories")) {
 			log.info("Bootstrapping optional Tricode Categories for Tricode Blogs");
-			tasks.add(new BootstrapSingleResource("Tricode news optional Categories", "Bootstrap the optional tab for Categories", "/mgnl-bootstrap/optional/tricode-categories/config.modules.tricode-blogs.apps.tricode-blogs.subApps.detail.editor.form.tabs.categoriestab.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REPLACE_EXISTING));
+			tasks.add(new BootstrapSingleResource("Tricode news optional Categories", "Bootstrap the optional tab for Categories", "/mgnl-bootstrap/optional/tricode-categories/config.modules.magnolia-blogs-module.apps.tricode-blogs.subApps.detail.editor.form.tabs.categoriestab.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REPLACE_EXISTING));
 		}
 		return tasks;
 	}
@@ -92,7 +92,7 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 		tasks.addAll(super.getDefaultUpdateTasks(forVersion));
 
 		// Always update templates, resources no matter what version is updated!
-		tasks.add(new UpdateModuleBootstrapTask(MODULE_NAME, "apps,commands,dialogs"));
+		tasks.add(new UpdateModuleBootstrapTask(MODULE_NAME, "commands,dialogs"));
 
 		return tasks;
 	}
