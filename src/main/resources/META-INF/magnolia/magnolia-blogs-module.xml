@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module SYSTEM "module.dtd" >
+<module>
+  <name>magnolia-blogs-module</name>
+  <displayName>${project.name}</displayName>
+  <description>${project.description}</description>
+  <class>nl.tricode.magnolia.blogs.BlogsModule</class>
+  <versionHandler>nl.tricode.magnolia.blogs.setup.BlogsModuleVersionHandler</versionHandler>
+  <version>${project.version}</version>
+
+    <components>
+        <id>app-blogs</id>
+    </components>
+
+    <components>
+        <id>app-blogs-browser</id>
+    </components>
+
+    <components>
+        <id>app-blogs-detail</id>
+    </components>
+
+    <dependencies>
+        <dependency>
+            <name>core</name>
+            <version>5.3/*</version>
+        </dependency>
+        <dependency>
+            <name>ui-admincentral</name>
+            <version>5.3/*</version>
+        </dependency>
+        <dependency>
+            <name>contacts</name>
+            <version>1.0/*</version>
+        </dependency>
+        <dependency>
+            <name>tricode-categories</name>
+            <version>1.0/*</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <name>tricode-tags</name>
+            <version>1.0/*</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <name>magnolia</name>
+            <workspaces>
+                <workspace>collaboration</workspace>
+            </workspaces>
+            <nodeTypeFile>/mgnl-nodetypes/tricode-blogs-nodetypes.xml</nodeTypeFile>
+        </repository>
+    </repositories>
+</module>

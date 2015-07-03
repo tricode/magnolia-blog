@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nodeTypes xmlns:mgnl="http://www.magnolia.info/jcr/mgnl">
+
+    <!-- custom node types -->
+    <nodeType name="mgnl:blog" isMixin="false" hasOrderableChildNodes="true" primaryItemName="">
+        <supertypes>
+            <supertype>mgnl:content</supertype>
+        </supertypes>
+    </nodeType>
+    <nodeType name="mgnl:blogsFolder" isMixin="false" hasOrderableChildNodes="true" primaryItemName="">
+        <supertypes>
+            <supertype>mgnl:folder</supertype>
+        </supertypes>
+    </nodeType>
+</nodeTypes>
