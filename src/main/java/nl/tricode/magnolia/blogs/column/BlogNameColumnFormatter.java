@@ -33,7 +33,6 @@ public class BlogNameColumnFormatter extends AbstractColumnFormatter<PropertyCol
         super(definition);
     }
 
-    @Override
     public Object generateCell(Table source, Object itemId, Object columnId) {
         final Item jcrItem = getJcrItem(source, itemId);
 

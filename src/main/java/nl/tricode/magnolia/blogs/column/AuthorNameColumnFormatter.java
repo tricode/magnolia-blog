@@ -46,7 +46,6 @@ public class AuthorNameColumnFormatter extends AbstractColumnFormatter<PropertyC
         super(definition);
     }
 
-    @Override
     public Object generateCell(Table source, Object itemId, Object columnId) {
         final Item jcrItem = getJcrItem(source, itemId);
         if (jcrItem != null && jcrItem.isNode()) {
