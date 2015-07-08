@@ -26,6 +26,7 @@ import info.magnolia.ui.workbench.column.AbstractColumnFormatter;
 import info.magnolia.ui.workbench.column.definition.PropertyColumnDefinition;
 import nl.tricode.magnolia.blogs.BlogsNodeTypes;
 import nl.tricode.magnolia.blogs.util.BlogWorkspaceUtil;
+
 import nl.tricode.magnolia.blogs.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

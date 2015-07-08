@@ -23,7 +23,6 @@ import info.magnolia.module.InstallContext;
 import info.magnolia.module.delta.*;
 import info.magnolia.module.model.ModuleDefinition;
 import info.magnolia.module.model.Version;
-import info.magnolia.ui.contentapp.setup.for5_3.ContentAppMigrationTask;
 import nl.tricode.magnolia.blogs.setup.task.UpdateModuleBootstrapTask;
 import nl.tricode.magnolia.blogs.setup.task.ModuleDependencyBootstrapTask;
 
@@ -36,14 +35,9 @@ import java.util.List;
  */
 public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 	private final static String MODULE_NAME = "magnolia-blogs-module";
-	//private static final String MODULE_VERSION_102 = "1.0.2";
 
 	public BlogsModuleVersionHandler() {
-		//register(DeltaBuilder.checkPrecondition("1.0.1", MODULE_VERSION_102));
 
-		//final Delta for_102 = DeltaBuilder.update(MODULE_VERSION_102, "")
-		//		  .addTask(new ContentAppMigrationTask("/modules/tricode-module-blogs"));
-		//register(for_102);
 	}
 
 	@Override
@@ -57,7 +51,6 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 			// force updates for snapshots
 			startupTasks.add(new RemoveNodeTask("Remove snapshot information", "", "config", "/modules/"+ MODULE_NAME +"/apps"));
 			startupTasks.add(new RemoveNodeTask("Remove snapshot information", "", "config", "/modules/"+ MODULE_NAME +"/dialogs"));
-			startupTasks.add(new RemoveNodeTask("Remove snapshot information", "", "config", "/modules/ui-admincentral/config/appLauncherLayout/groups/tricode/apps/blogs"));
 			startupTasks.add(new ModuleBootstrapTask());
 		}
 		startupTasks.addAll(getOptionalTasks(ctx));
@@ -101,6 +94,8 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 	protected List<Task> getExtraInstallTasks(InstallContext installContext) {
 		final List<Task> tasks = new ArrayList<Task>();
 		tasks.addAll(super.getExtraInstallTasks(installContext));
+
+		//tasks.add(new BootstrapSingleResource("ui-admincentral add Blogs app", "Bootstrap task for ui-admincentral", "/mgnl-bootstrap/ui-admincentral/config.modules.ui-admincentral.config.appLauncherLayout.groups.collaboration.apps.tricode-blogs.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REPLACE_EXISTING));
 
 		tasks.add(new ModuleDependencyBootstrapTask("/mgnl-bootstrap-samples/optional", "tricode-tags"));
 		tasks.add(new ModuleDependencyBootstrapTask("/mgnl-bootstrap-samples/optional", "tricode-categories"));

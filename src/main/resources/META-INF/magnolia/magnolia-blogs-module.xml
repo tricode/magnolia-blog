@@ -4,7 +4,6 @@
   <name>magnolia-blogs-module</name>
   <displayName>${project.name}</displayName>
   <description>${project.description}</description>
-  <class>nl.tricode.magnolia.blogs.BlogsModule</class>
   <versionHandler>nl.tricode.magnolia.blogs.setup.BlogsModuleVersionHandler</versionHandler>
   <version>${project.version}</version>
 

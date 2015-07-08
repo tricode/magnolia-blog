@@ -12,8 +12,8 @@ import info.magnolia.ui.workbench.column.definition.PropertyColumnDefinition;
 
 import nl.tricode.magnolia.blogs.BlogsNodeTypes;
 import nl.tricode.magnolia.blogs.util.BlogWorkspaceUtil;
-import nl.tricode.magnolia.blogs.util.StringUtils;
 
+import nl.tricode.magnolia.blogs.util.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,10 +25,8 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.Session;
 
-
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-
 
 public class AuthorNameColumnFormatterTest {
     private AuthorNameColumnFormatter formatter;
