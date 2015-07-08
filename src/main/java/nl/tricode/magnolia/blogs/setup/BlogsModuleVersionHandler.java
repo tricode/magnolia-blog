@@ -95,8 +95,6 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 		final List<Task> tasks = new ArrayList<Task>();
 		tasks.addAll(super.getExtraInstallTasks(installContext));
 
-		//tasks.add(new BootstrapSingleResource("ui-admincentral add Blogs app", "Bootstrap task for ui-admincentral", "/mgnl-bootstrap/ui-admincentral/config.modules.ui-admincentral.config.appLauncherLayout.groups.collaboration.apps.tricode-blogs.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REPLACE_EXISTING));
-
 		tasks.add(new ModuleDependencyBootstrapTask("/mgnl-bootstrap-samples/optional", "tricode-tags"));
 		tasks.add(new ModuleDependencyBootstrapTask("/mgnl-bootstrap-samples/optional", "tricode-categories"));
 
