@@ -172,10 +172,13 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 		expectedReturnValues.addElement("post_name");
 		expectedReturnValues.addElement("terms");
 
+		Hashtable hashTable = new Hashtable();
+		hashTable.put("number", Integer.MAX_VALUE);
+
       request.addElement(blogID);
 		request.addElement(username);
 		request.addElement(password);
-		request.addElement(new Hashtable());
+		request.addElement(hashTable);
 		request.addElement(expectedReturnValues);
 
 		return request;
