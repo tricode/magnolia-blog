@@ -18,6 +18,7 @@
  */
 package nl.tricode.magnolia.blogs.dialog.action;
 
+import com.sun.org.apache.xalan.internal.xsltc.runtime.*;
 import com.vaadin.data.Item;
 import info.magnolia.cms.core.Path;
 import info.magnolia.cms.util.QueryUtil;
@@ -44,9 +45,16 @@ import javax.jcr.Session;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.*;
+import java.util.Hashtable;
 
 public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressBlogDialogActionDefinition> {
 	private static final Logger log = LoggerFactory.getLogger(SaveWordpressBlogDialogAction.class);
+
+	private static final String FIRSTNAME = "first_name";
+	private static final String LASTNAME = "last_name";
+	private static final String EMAIL = "email";
+	private static final String URL = "url";
+
 	private final Item item;
 	private final EditorValidator validator;
 	private final EditorCallback callback;
@@ -56,6 +64,7 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 	private Session damSession;
 	private XmlRpcClient client;
 	private boolean shouldImportImages;
+	private boolean shouldImportContacts;
 	private HashMap<String, String> recentlyCreatedMagnoliaContacts;
 
 	public SaveWordpressBlogDialogAction(SaveWordpressBlogDialogActionDefinition definition, Item item, EditorValidator validator, EditorCallback callback, Shell shell) throws ActionExecutionException {
@@ -65,14 +74,24 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 		this.callback = callback;
 		this.shell = shell;
 		this.shouldImportImages = (Boolean) item.getItemProperty("shouldImportImages").getValue();
-		this.recentlyCreatedMagnoliaContacts = new HashMap<String, String>();
-
+		this.shouldImportContacts = (Boolean) item.getItemProperty("shouldImportContacts").getValue();
 		this.validator.showValidation(true);
+
 		if (this.validator.isValid()) {
 			try {
 				this.blogSession = MgnlContext.getJCRSession(BlogWorkspaceUtil.COLLABORATION);
-				this.contactSession = MgnlContext.getJCRSession(BlogWorkspaceUtil.CONTACTS);
-				if (this.shouldImportImages) this.damSession = MgnlContext.getJCRSession(BlogWorkspaceUtil.DAM);
+
+				/** Only open contacts session when needed.*/
+				if (this.shouldImportContacts) {
+					this.recentlyCreatedMagnoliaContacts = new HashMap<String, String>();
+					this.contactSession = MgnlContext.getJCRSession(BlogWorkspaceUtil.CONTACTS);
+				}
+
+				/** Only open DAM session when needed. */
+				if (this.shouldImportImages) {
+					this.damSession = MgnlContext.getJCRSession(BlogWorkspaceUtil.DAM);
+				}
+
 				this.client = new XmlRpcClient((String) this.item.getItemProperty("endpoint").getValue());
 			} catch (RepositoryException e) {
 				log.error("Error getting session: " + e.getMessage(), e);
@@ -92,8 +111,12 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 	public void execute() throws ActionExecutionException {
 		if (validator.isValid()) {
 			try {
+				log.debug("Start wordPress import.");
+				log.debug("Import into DAM [" + this.shouldImportImages + "].");
+				log.debug("Import into Contacts [" + this.shouldImportContacts + "].");
 				Vector<Hashtable<String, Object>> blog = getWordpressPosts();
 				if (!blog.isEmpty()) {
+					log.debug("Blog size [" + blog.size() + "]");
 					for (Hashtable<String, Object> blogPost : blog) {
 						processPost(blogPost);
 					}
@@ -106,7 +129,6 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 				cancelImport();
 				throw new ActionExecutionException(e);
 			}
-
 		} else {
 			log.error("Validation error(s). Import cancelled.");
 		}
@@ -150,7 +172,7 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 		expectedReturnValues.addElement("post_name");
 		expectedReturnValues.addElement("terms");
 
-		request.addElement(blogID);
+      request.addElement(blogID);
 		request.addElement(username);
 		request.addElement(password);
 		request.addElement(new Hashtable());
@@ -168,7 +190,7 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 	private void processPost(Hashtable<String, Object> blogPost) throws ActionExecutionException {
 		String name = (String) blogPost.get("post_name");
 		String title = (String) blogPost.get("post_title");
-		String author = getMagnoliaContact((String) blogPost.get("post_author"));
+
 		Calendar date = Calendar.getInstance();
 		date.setTime((Date) blogPost.get("post_date"));
 		Calendar dateModified = Calendar.getInstance();
@@ -181,11 +203,17 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 				message = contentProcessor.startImporting();
 			}
 
+			log.debug("Process blog [" + title + "].");
 			Node blogPostNode = blogSession.getRootNode().addNode("temporaryBlogPostNodeName", BlogsNodeTypes.Blog.NAME);
 			blogPostNode.setProperty(BlogsNodeTypes.Blog.PROPERTY_TITLE, title);
 			blogPostNode.setProperty(BlogsNodeTypes.Blog.PROPERTY_MESSAGE, message);
-			blogPostNode.setProperty(BlogsNodeTypes.Blog.PROPERTY_AUTHOR, author);
-            blogPostNode.setProperty(BlogsNodeTypes.Blog.PROPERTY_COMMENTS_ENABLED, true);
+
+			if (shouldImportContacts) {
+				String author = getMagnoliaContact((String) blogPost.get("post_author"));
+				blogPostNode.setProperty(BlogsNodeTypes.Blog.PROPERTY_AUTHOR, author);
+			}
+
+         blogPostNode.setProperty(BlogsNodeTypes.Blog.PROPERTY_COMMENTS_ENABLED, true);
 			blogPostNode.setProperty("mgnl:created", date);
 			blogPostNode.setProperty("mgnl:lastModified", dateModified);
 
@@ -234,10 +262,10 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 	private Vector<Object> buildGetUserRequest(String wordpressUserID) {
 		Vector<Object> request = new Vector<Object>();
 		Vector<String> expectedReturnValues = new Vector<String>();
-		expectedReturnValues.addElement("first_name");
-		expectedReturnValues.addElement("last_name");
-		expectedReturnValues.addElement("email");
-		expectedReturnValues.addElement("url");
+		expectedReturnValues.addElement(FIRSTNAME);
+		expectedReturnValues.addElement(LASTNAME);
+		expectedReturnValues.addElement(EMAIL);
+		expectedReturnValues.addElement(URL);
 
 		request.addElement(item.getItemProperty("blogID").getValue());
 		request.addElement(item.getItemProperty("username").getValue());
@@ -254,7 +282,6 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 		} else {
 			return null;
 		}
-
 	}
 
 	/**
@@ -289,12 +316,12 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 	private String createMagnoliaContact(Hashtable<String, Object> contactDetails) throws ActionExecutionException {
 		try {
 			Node newContactNode = contactSession.getRootNode().addNode("temporaryContactNodeName", "mgnl:contact");
-			newContactNode.setProperty("firstName", (String) contactDetails.get("first_name"));
-			newContactNode.setProperty("lastName", (String) contactDetails.get("last_name"));
-			newContactNode.setProperty("email", (String) contactDetails.get("email"));
-			newContactNode.setProperty("website", (String) contactDetails.get("url"));
+			newContactNode.setProperty("firstName", (String) contactDetails.get(FIRSTNAME));
+			newContactNode.setProperty("lastName", (String) contactDetails.get(LASTNAME));
+			newContactNode.setProperty("email", (String) contactDetails.get(EMAIL));
+			newContactNode.setProperty("website", (String) contactDetails.get(URL));
 			NodeUtil.renameNode(newContactNode, generateUniqueNodeNameForContact(newContactNode));
-			recentlyCreatedMagnoliaContacts.put((String) contactDetails.get("email"), newContactNode.getIdentifier());
+			recentlyCreatedMagnoliaContacts.put((String) contactDetails.get(EMAIL), newContactNode.getIdentifier());
 			return newContactNode.getIdentifier();
 		} catch (RepositoryException e) {
 			log.error("Error while creating contact " + e.getMessage(), e);
@@ -315,10 +342,18 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 	 * firstName. lastName = eric firstName = tabli The node name is etabli
 	 */
 	private String defineNodeName(final Node node) throws RepositoryException {
+		String result;
 		String intitialFirstName = node.getProperty("firstName").getString();
 		String firstName = StringUtils.isNotBlank(intitialFirstName) ? intitialFirstName.trim() : intitialFirstName;
-		String lastName = node.getProperty("lastName").getString().trim();
-		return Path.getValidatedLabel((firstName.charAt(0) + lastName.replaceAll("\\s+", "")).toLowerCase());
+
+		if (StringUtils.isNotBlank(firstName)) {
+			String lastName = node.getProperty("lastName").getString().trim();
+			result = Path.getValidatedLabel((firstName.charAt(0) + lastName.replaceAll("\\s+", "")).toLowerCase());
+		} else {
+			log.debug("Incomplete wordpress userdetails");
+			result = "Anonymous";
+		}
+		return result;
 	}
 
 	/**
@@ -329,8 +364,14 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 	private void finishImport() throws ActionExecutionException {
 		try {
 			blogSession.save();
-			contactSession.save();
-			if (shouldImportImages) damSession.save();
+
+			if (shouldImportContacts) {
+				contactSession.save();
+			}
+
+			if (shouldImportImages) {
+				damSession.save();
+			}
 			BlogPostImageImporter.cleanRecentUrlList();
 			callback.onSuccess(getDefinition().getName());
 			shell.openNotification(MessageStyleTypeEnum.INFO, true, "Import completed successfully.");
@@ -348,8 +389,14 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 	private void cancelImport() throws ActionExecutionException {
 		try {
 			blogSession.refresh(false);
-			contactSession.refresh(false);
-			if (shouldImportImages) damSession.refresh(false);
+
+			if (shouldImportContacts) {
+				contactSession.refresh(false);
+			}
+
+			if (shouldImportImages) {
+				damSession.refresh(false);
+			}
 			BlogPostImageImporter.cleanRecentUrlList();
 			callback.onCancel();
 		} catch (RepositoryException e) {

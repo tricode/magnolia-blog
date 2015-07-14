@@ -4339,13 +4339,10 @@
                     <sv:value>superuser</sv:value>
                   </sv:property>
                   <sv:property sv:name="mgnl:lastModified" sv:type="Date">
-                    <sv:value>2015-07-06T13:57:39.709+02:00</sv:value>
+                    <sv:value>2015-07-14T10:48:55.594+02:00</sv:value>
                   </sv:property>
                   <sv:property sv:name="mgnl:lastModifiedBy" sv:type="String">
                     <sv:value>superuser</sv:value>
-                  </sv:property>
-                  <sv:property sv:name="required" sv:type="String">
-                    <sv:value>true</sv:value>
                   </sv:property>
                   <sv:property sv:name="targetWorkspace" sv:type="String">
                     <sv:value>contacts</sv:value>
