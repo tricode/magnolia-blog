@@ -18,7 +18,6 @@
  */
 package nl.tricode.magnolia.blogs.dialog.action;
 
-import com.sun.org.apache.xalan.internal.xsltc.runtime.*;
 import com.vaadin.data.Item;
 import info.magnolia.cms.core.Path;
 import info.magnolia.cms.util.QueryUtil;
@@ -43,9 +42,14 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.util.*;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Vector;
 
 public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressBlogDialogActionDefinition> {
 	private static final Logger log = LoggerFactory.getLogger(SaveWordpressBlogDialogAction.class);
@@ -173,7 +177,7 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 		expectedReturnValues.addElement("terms");
 
 		Hashtable hashTable = new Hashtable();
-		hashTable.put("number", Integer.MAX_VALUE);
+		hashTable.put("number", 254);
 
       request.addElement(blogID);
 		request.addElement(username);
@@ -193,12 +197,15 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 	private void processPost(Hashtable<String, Object> blogPost) throws ActionExecutionException {
 		String name = (String) blogPost.get("post_name");
 		String title = (String) blogPost.get("post_title");
-
 		Calendar date = Calendar.getInstance();
 		date.setTime((Date) blogPost.get("post_date"));
 		Calendar dateModified = Calendar.getInstance();
 		dateModified.setTime((Date) blogPost.get("post_modified"));
 		String message = (String) blogPost.get("post_content");
+
+		/** Encoding for readable text in the blogpost. */
+		title = encodeString(title);
+		message = encodeString(message);
 
 		try {
 			if (shouldImportImages) {
@@ -229,6 +236,22 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 			log.error("Error while adding post: " + e.getMessage(), e);
 			throw new ActionExecutionException(e);
 		}
+	}
+
+	/**
+	 * Encode strings to UTF-8.
+	 * @param stringToEncode
+	 * @return
+	 */
+	private String encodeString(String stringToEncode) {
+		String result = stringToEncode;
+		try {
+			result = new String(stringToEncode.getBytes(), "UTF-8");}
+		catch (UnsupportedEncodingException e) {
+			log.error("Error occurred when encoding [" + stringToEncode + "] ", e);
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	/**
@@ -318,9 +341,16 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 	 */
 	private String createMagnoliaContact(Hashtable<String, Object> contactDetails) throws ActionExecutionException {
 		try {
+			String firstname = (String) contactDetails.get(FIRSTNAME);
+			String lastname = (String) contactDetails.get(LASTNAME);
+
+			/** Encoded first and lastname to readable text. */
+			firstname = encodeString(firstname);
+			lastname = encodeString(lastname);
+
 			Node newContactNode = contactSession.getRootNode().addNode("temporaryContactNodeName", "mgnl:contact");
-			newContactNode.setProperty("firstName", (String) contactDetails.get(FIRSTNAME));
-			newContactNode.setProperty("lastName", (String) contactDetails.get(LASTNAME));
+			newContactNode.setProperty("firstName", firstname);
+			newContactNode.setProperty("lastName", lastname);
 			newContactNode.setProperty("email", (String) contactDetails.get(EMAIL));
 			newContactNode.setProperty("website", (String) contactDetails.get(URL));
 			NodeUtil.renameNode(newContactNode, generateUniqueNodeNameForContact(newContactNode));
