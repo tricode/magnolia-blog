@@ -141,10 +141,6 @@
                 <configuration>
                     <tagNameFormat>@{project.version}</tagNameFormat>
                     <preparationGoals>install</preparationGoals>
-                    <!--suppress MavenModelInspection -->
-                    <username>${tricode.tools.scm.username}</username>
-                    <!--suppress MavenModelInspection -->
-                    <password>${tricode.tools.scm.password}</password>
                 </configuration>
             </plugin>
             <!-- The Maven Failsafe Plugin is a fork of the Maven Surefire Plugin
