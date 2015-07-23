@@ -1,23 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>nl.tricode.magnolia</groupId>
-  <artifactId>magnolia-blogs-module</artifactId>
-  <version>1.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
-  <name>Tricode Magnolia Blog Module</name>
+    <groupId>nl.tricode.magnolia</groupId>
+    <artifactId>magnolia-blogs-module</artifactId>
+    <version>1.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Tricode Magnolia Blog Module</name>
     <description>This module contains a Blog app for Magnolia CMS</description>
     <organization>
         <name>Tricode Business Integrators B.V.</name>
         <url>http://www.tricode.nl</url>
     </organization>
 
-  <properties>
-    <magnoliaVersion>5.3.9</magnoliaVersion>
-    <junitVersion>4.12</junitVersion>
-    <javaVersion>1.6</javaVersion>
-  </properties>
+    <scm>
+        <connection>scm:git:git@github.com:tricode/magnolia-blog.git</connection>
+        <developerConnection>scm:git:git@github.com:tricode/magnolia-blog.git</developerConnection>
+        <url>https://github.com/tricode/magnolia-blog.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>tricode-magnolia-releases</id>
+            <name>Tricode Magnolia Releases</name>
+            <url>https://artifacts.proxy.tricode.nl/content/repositories/magnolia-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>tricode-magnolia-snapshots</id>
+            <name>Tricode Magnolia Snapshots</name>
+            <url>http://artifacts.proxy.tricode.nl/content/repositories/magnolia-snapshots/</url>
+            <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <properties>
+        <magnoliaVersion>5.3.9</magnoliaVersion>
+        <junitVersion>4.12</junitVersion>
+        <javaVersion>1.6</javaVersion>
+    </properties>
 
     <dependencies>
         <dependency>
