@@ -37,7 +37,10 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 	private final static String MODULE_NAME = "magnolia-blogs-module";
 
 	public BlogsModuleVersionHandler() {
-
+		final Delta for_1_1_1 = DeltaBuilder.update("1.1.1", "Add a userrole blog-editor")
+				  .addTask(new BootstrapSingleResource("Userrole config", "Installing a userrole for the blog module",
+						    "/mgnl-bootstrap/magnolia-blogs-module/userroles/userroles.blog-editor.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING));
+		register(for_1_1_1);
 	}
 
 	@Override
