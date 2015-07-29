@@ -12,3 +12,9 @@ to add to your Magnolia website.
 
 ##License
 Copyright (c) 2015 Tricode and contributors. Released under a [GNUv3 license](https://github.com/tricode/magnolia-blog/blob/master/license.txt).
+
+##Release notes 1.1.1.
+* Added userrole blog-editor.
+* Added js config file for ckeditor.
+* Change configuration for AppLauncher layout.
+* Changed versioning to three digit.
