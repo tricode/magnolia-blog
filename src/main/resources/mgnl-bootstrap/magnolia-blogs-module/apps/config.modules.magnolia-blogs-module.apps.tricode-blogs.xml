@@ -4262,7 +4262,7 @@
                     <sv:value>info.magnolia.ui.form.field.definition.RichTextFieldDefinition</sv:value>
                   </sv:property>
                   <sv:property sv:name="configJsFile" sv:type="String">
-                    <sv:value>/.resources/magnolia-blogss-module/ckeditor/config-richtext.js</sv:value>
+                    <sv:value>/.resources/magnolia-blogs-module/ckeditor/config-richtext.js</sv:value>
                   </sv:property>
                   <sv:property sv:name="jcr:createdBy" sv:type="String">
                     <sv:value>admin</sv:value>
