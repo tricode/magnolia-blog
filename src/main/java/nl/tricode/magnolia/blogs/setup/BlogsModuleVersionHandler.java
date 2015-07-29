@@ -38,6 +38,8 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 
 	public BlogsModuleVersionHandler() {
 		final Delta for_1_1_1 = DeltaBuilder.update("1.1.1", "Add a userrole blog-editor")
+				  .addTask(new BootstrapSingleResource("Userrole config", "Installing a userrole config in the content app",
+							 "/mgnl-bootstrap/magnolia-blogs-module/apps/config.modules.magnolia-blogs-module.apps.tricode-blogs.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING))
 				  .addTask(new BootstrapSingleResource("Userrole config", "Installing a userrole for the blog module",
 						    "/mgnl-bootstrap/magnolia-blogs-module/userroles/userroles.blog-editor.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING));
 		register(for_1_1_1);
