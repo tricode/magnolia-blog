@@ -1,7 +1,8 @@
 # magnolia-blog
-Blog module for [Magnolia cms](http://www.magnolia-cms.com).
+Blog app for [Magnolia cms](http://www.magnolia-cms.com).
 
-In this module we provide a Content app to create/edit/delete blog articles. 
+In this module we provide a content app to create/edit/delete blog articles fast and easy. Select an author, write your blog, include photos and publish it right away.
+
 Create your own website components with nl.tricode.magnolia.blogs.templates.BlogRenderableDefinition
 to add to your Magnolia website.
 
