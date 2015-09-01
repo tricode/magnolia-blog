@@ -43,24 +43,11 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 				  .addTask(new BootstrapSingleResource("Userrole config", "Installing a userrole for the blog module",
 						    "/mgnl-bootstrap/magnolia-blogs-module/userroles/userroles.blog-editor.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING));
 		register(for_1_1_1);
-	}
 
-	@Override
-	protected List<Task> getStartupTasks(InstallContext ctx) {
-		ModuleDefinition module = ctx.getCurrentModuleDefinition();
-
-		List<Task> startupTasks = new ArrayList<Task>(0);
-		startupTasks.addAll(super.getStartupTasks(ctx));
-
-		if ("SNAPSHOT".equals(module.getVersion().getClassifier())) {
-			// force updates for snapshots
-			startupTasks.add(new RemoveNodeTask("Remove snapshot information", "", "config", "/modules/"+ MODULE_NAME +"/apps"));
-			startupTasks.add(new RemoveNodeTask("Remove snapshot information", "", "config", "/modules/"+ MODULE_NAME +"/dialogs"));
-			startupTasks.add(new ModuleBootstrapTask());
-		}
-		startupTasks.addAll(getOptionalTasks(ctx));
-
-		return startupTasks;
+        final Delta for_1_1_2 = DeltaBuilder.update("1.1.2", "Updating blog module")
+                .addTask(new BootstrapSingleResource("Userrole config", "Installing a userrole for the blog module",
+                        "/mgnl-bootstrap/magnolia-blogs-module/userroles/userroles.blog-editor.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING));
+        register(for_1_1_2);
 	}
 
 	/**
@@ -90,7 +77,7 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 		tasks.addAll(super.getDefaultUpdateTasks(forVersion));
 
 		// Always update templates, resources no matter what version is updated!
-		tasks.add(new UpdateModuleBootstrapTask(MODULE_NAME, "commands,dialogs"));
+		tasks.add(new UpdateModuleBootstrapTask(MODULE_NAME, "commands,config"));
 
 		return tasks;
 	}

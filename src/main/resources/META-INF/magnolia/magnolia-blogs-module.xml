@@ -8,6 +8,21 @@
   <version>${project.version}</version>
 
     <components>
+        <id>main</id>
+        <component>
+            <type>nl.tricode.magnolia.blogs.service.BlogService</type>
+            <implementation>nl.tricode.magnolia.blogs.service.BlogServiceImpl</implementation>
+            <scope>singleton</scope>
+        </component>
+        <component>
+            <type>nl.tricode.magnolia.blogs.templates.functions.BlogTemplatingFunctions</type>
+            <implementation>nl.tricode.magnolia.blogs.templates.functions.BlogTemplatingFunctions</implementation>
+            <scope>singleton</scope>
+        </component>
+    </components>
+
+    <!-- Todo: is this still needed? Looks like the "old" Magnolia 5.0 way -->
+    <components>
         <id>app-blogs</id>
     </components>
 
