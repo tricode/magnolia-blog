@@ -45,8 +45,8 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 		register(for_1_1_1);
 
         final Delta for_1_1_2 = DeltaBuilder.update("1.1.2", "Updating blog module")
-                .addTask(new BootstrapSingleResource("Userrole config", "Installing a userrole for the blog module",
-                        "/mgnl-bootstrap/magnolia-blogs-module/userroles/userroles.blog-editor.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING));
+                .addTask(new BootstrapSingleResource("Rendering config", "Installing new freemarker context attributes for blogfn alias",
+                        "/mgnl-bootstrap/magnolia-blogs-module/config/config.modules.rendering.renderers.freemarker.contextAttributes.blogfn.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING));
         register(for_1_1_2);
 	}
 
