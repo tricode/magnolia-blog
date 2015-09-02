@@ -1,5 +1,8 @@
 package nl.tricode.magnolia.blogs.service;
 
+import nl.tricode.magnolia.blogs.exception.UnableToGetBlogException;
+import nl.tricode.magnolia.blogs.exception.UnableToGetLatestBlogsException;
+
 import javax.jcr.Node;
 
 /**
@@ -15,8 +18,9 @@ public interface BlogService {
      * @param maxResultsPerPage Maximum results returned per page
      * @param categoryUuid Category (mgnl:category) identifier
      * @return BlogResult wrapper object
+     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetLatestBlogsException
      */
-    BlogResult getLatestBlogs(String searchRootPath, int pageNumber, int maxResultsPerPage, String categoryUuid);
+    BlogResult getLatestBlogs(String searchRootPath, int pageNumber, int maxResultsPerPage, String categoryUuid) throws UnableToGetLatestBlogsException;
 
     /**
      * Returns all available blog entries starting from given path, page number and maximum results filtered by given category name
@@ -28,23 +32,26 @@ public interface BlogService {
      * @param categoryName Category (mgnl:category) name
      * @param categoryWorkspace Category workspace name
      * @return BlogResult wrapper object
+     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetLatestBlogsException
      */
-    BlogResult getLatestBlogs(String searchRootPath, int pageNumber, int maxResultsPerPage, String categoryName, String categoryWorkspace);
+    BlogResult getLatestBlogs(String searchRootPath, int pageNumber, int maxResultsPerPage, String categoryName, String categoryWorkspace) throws UnableToGetLatestBlogsException;
 
     /**
      * Return the blog node for given identifier.
      *
      * @param id Node identifier
+     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetBlogException
      * @return Blog Node
      */
-    Node getBlogById(String id);
+    Node getBlogById(String id) throws UnableToGetBlogException;
 
     /**
      * Return the blog node for given unique name.
      *
      * @param name Unique blog name
+     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetBlogException
      * @return Blog Node
      */
-    Node getBlogByName(String name);
+    Node getBlogByName(String name) throws UnableToGetBlogException;
 
 }

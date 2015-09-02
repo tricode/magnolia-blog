@@ -4,6 +4,9 @@ import info.magnolia.cms.util.QueryUtil;
 import info.magnolia.jcr.util.NodeUtil;
 import info.magnolia.jcr.wrapper.I18nNodeWrapper;
 import nl.tricode.magnolia.blogs.BlogsNodeTypes;
+import nl.tricode.magnolia.blogs.exception.BlogReadException;
+import nl.tricode.magnolia.blogs.exception.UnableToGetBlogException;
+import nl.tricode.magnolia.blogs.exception.UnableToGetLatestBlogsException;
 import nl.tricode.magnolia.blogs.util.BlogWorkspaceUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -33,7 +36,7 @@ public class BlogServiceImpl implements BlogService {
      * {@inheritDoc}
      */
     @Override
-    public BlogResult getLatestBlogs(String searchRootPath, int pageNumber, int maxResultsPerPage, String categoryUuid) {
+    public BlogResult getLatestBlogs(String searchRootPath, int pageNumber, int maxResultsPerPage, String categoryUuid) throws UnableToGetLatestBlogsException {
         BlogResult blogResult = new BlogResult();
         // jcr filter on category Uuid
         String customJcrFilter = "";
@@ -54,7 +57,8 @@ public class BlogServiceImpl implements BlogService {
             blogResult.setResults(getPagedResults(allBlogResults, pageNumber, maxResultsPerPage));
 
         } catch (RepositoryException e) {
-            log.debug("Exception during fetch of blog items", e);
+            log.error("Exception during fetch of blog items", e);
+            throw new UnableToGetLatestBlogsException("Unable to read blogs for the given criteria.", e);
         }
         return blogResult;
     }
@@ -63,7 +67,7 @@ public class BlogServiceImpl implements BlogService {
      * {@inheritDoc}
      */
     @Override
-    public BlogResult getLatestBlogs(String searchRootPath, int pageNumber, int maxResultsPerPage, String categoryName, String categoryWorkspace) {
+    public BlogResult getLatestBlogs(String searchRootPath, int pageNumber, int maxResultsPerPage, String categoryName, String categoryWorkspace) throws UnableToGetLatestBlogsException {
         String categoryUuid = findCategoryIdByName(categoryName, categoryWorkspace);
 
         return getLatestBlogs(searchRootPath, pageNumber, maxResultsPerPage, categoryUuid);
@@ -73,7 +77,7 @@ public class BlogServiceImpl implements BlogService {
      * {@inheritDoc}
      */
     @Override
-    public Node getBlogById(String id) {
+    public Node getBlogById(String id) throws UnableToGetBlogException {
         Node blog = null;
         if (StringUtils.isBlank(id)) {
             return null;
@@ -81,7 +85,8 @@ public class BlogServiceImpl implements BlogService {
         try {
             blog = NodeUtil.getNodeByIdentifier(BlogWorkspaceUtil.COLLABORATION, id);
         } catch (RepositoryException e) {
-            log.debug("Exception during fetch of blog", e);
+            log.error("Exception during fetch of blog with id: {}",id, e);
+            throw new UnableToGetBlogException("Unable to retrieve blog for given id.", e);
         }
         return blog;
     }
@@ -90,7 +95,7 @@ public class BlogServiceImpl implements BlogService {
      * {@inheritDoc}
      */
     @Override
-    public Node getBlogByName(String name) {
+    public Node getBlogByName(String name) throws UnableToGetBlogException{
         final String blogId = findBlogIdByName(name);
 
         return getBlogById(blogId);
@@ -173,7 +178,7 @@ public class BlogServiceImpl implements BlogService {
         return nodeListPaged;
     }
 
-    private String findBlogIdByName(String blogName) {
+    private String findBlogIdByName(String blogName) throws UnableToGetBlogException {
         if (StringUtils.isBlank(blogName)) {
             return  "";
         }
@@ -185,7 +190,7 @@ public class BlogServiceImpl implements BlogService {
                 return allBlogResults.get(0).getIdentifier();
             }
         } catch (RepositoryException e) {
-            log.debug("Exception during fetch of category items", e);
+            log.error("Exception during fetch of blog by name: {}",blogName, e);
         }
 
         return "";
@@ -204,7 +209,7 @@ public class BlogServiceImpl implements BlogService {
                 return allCategoriesResults.get(0).getIdentifier();
             }
         } catch (RepositoryException e) {
-            log.debug("Exception during fetch of category items", e);
+            log.error("Exception during fetch of category items. category: {}, workspace: {}", categoryName, workspace, e);
         }
         return "";
     }

@@ -2,6 +2,8 @@ package nl.tricode.magnolia.blogs.templates.functions;
 
 import info.magnolia.jcr.util.ContentMap;
 import info.magnolia.templating.functions.TemplatingFunctions;
+import nl.tricode.magnolia.blogs.exception.UnableToGetBlogException;
+import nl.tricode.magnolia.blogs.exception.UnableToGetLatestBlogsException;
 import nl.tricode.magnolia.blogs.service.BlogResult;
 import nl.tricode.magnolia.blogs.service.BlogService;
 import org.slf4j.Logger;
@@ -32,7 +34,12 @@ public class BlogTemplatingFunctions {
      * @return BlogResult wrapper object
      */
     public BlogResult allBlogs() {
-        return blogService.getLatestBlogs("/", 1, Integer.MAX_VALUE, "");
+        try {
+            return blogService.getLatestBlogs("/", 1, Integer.MAX_VALUE, "");
+        } catch (UnableToGetLatestBlogsException e) {
+            log.error("Unable to get latest blogs.", e);
+        }
+        return null;
     }
 
     /**
@@ -43,7 +50,12 @@ public class BlogTemplatingFunctions {
      * @return BlogResult wrapper object
      */
     public BlogResult allBlogsByCategory(String categoryName, String workspace) {
-        return blogService.getLatestBlogs("/", 1, Integer.MAX_VALUE, categoryName, workspace);
+        try {
+            return blogService.getLatestBlogs("/", 1, Integer.MAX_VALUE, categoryName, workspace);
+        } catch (UnableToGetLatestBlogsException e) {
+            log.error("Unable to get latest blogs.");
+        }
+        return null;
     }
 
     /**
@@ -55,7 +67,13 @@ public class BlogTemplatingFunctions {
      * @return BlogResult wrapper object
      */
     public BlogResult pagedBlogs(String searchRootPath, int pageNumber, int maxResultsPerPage) {
-        return blogService.getLatestBlogs(searchRootPath, pageNumber, maxResultsPerPage,"");
+        try {
+            return blogService.getLatestBlogs(searchRootPath, pageNumber, maxResultsPerPage,"");
+        } catch (UnableToGetLatestBlogsException e) {
+            log.error("Unable to get latest blogs. searchRootPath: {}, pageNumber: {}, maxResultsPerPage: {}",
+                    searchRootPath, pageNumber, maxResultsPerPage);
+        }
+        return null;
     }
 
     /**
@@ -69,7 +87,13 @@ public class BlogTemplatingFunctions {
      * @return BlogResult wrapper object
      */
     public BlogResult pagedBlogsByCategory(String searchRootPath, int pageNumber, int maxResultsPerPage, String categoryName, String workspace) {
-        return blogService.getLatestBlogs(searchRootPath, pageNumber, maxResultsPerPage, categoryName, workspace);
+        try {
+            return blogService.getLatestBlogs(searchRootPath, pageNumber, maxResultsPerPage, categoryName, workspace);
+        } catch (UnableToGetLatestBlogsException e) {
+            log.error("Unable to get the latest blogs. searchRootPath: {}, pageNumber: {}, maxResultsPerPage: {}, categoryName: {}, workspace: {}",
+                    searchRootPath, pageNumber, maxResultsPerPage, categoryName, workspace);
+        }
+        return null;
     }
 
     /**
@@ -99,7 +123,12 @@ public class BlogTemplatingFunctions {
      * @return Blog node
      */
     public Node blogById(String id) {
-        return blogService.getBlogById(id);
+        try {
+            return blogService.getBlogById(id);
+        } catch (UnableToGetBlogException e) {
+            log.error("Unable to get blog by id: {}", id);
+        }
+        return null;
     }
 
     /**
@@ -109,6 +138,11 @@ public class BlogTemplatingFunctions {
      * @return Blog node
      */
     public Node blogByName(String name) {
-        return blogService.getBlogByName(name);
+        try {
+            return blogService.getBlogByName(name);
+        } catch (UnableToGetBlogException e) {
+            log.error("Unable to get blog by it's name: {}", name);
+        }
+        return null;
     }
 }
