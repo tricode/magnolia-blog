@@ -85,7 +85,7 @@ public class BlogServiceImpl implements BlogService {
         try {
             blog = NodeUtil.getNodeByIdentifier(BlogWorkspaceUtil.COLLABORATION, id);
         } catch (RepositoryException e) {
-            log.error("Exception during fetch of blog with id: {}",id, e);
+            log.error("Exception during fetch of blog by id.", e);
             throw new UnableToGetBlogException("Unable to retrieve blog for given id.", e);
         }
         return blog;
@@ -190,7 +190,7 @@ public class BlogServiceImpl implements BlogService {
                 return allBlogResults.get(0).getIdentifier();
             }
         } catch (RepositoryException e) {
-            log.error("Exception during fetch of blog by name: {}",blogName, e);
+            log.error("Exception during fetch of blog by it's name.", e);
         }
 
         return "";
@@ -209,7 +209,7 @@ public class BlogServiceImpl implements BlogService {
                 return allCategoriesResults.get(0).getIdentifier();
             }
         } catch (RepositoryException e) {
-            log.error("Exception during fetch of category items. category: {}, workspace: {}", categoryName, workspace, e);
+            log.error("Exception during fetch of category items.", e);
         }
         return "";
     }

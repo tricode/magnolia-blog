@@ -32,14 +32,10 @@ public class BlogTemplatingFunctions {
      * Returns all available blog entries starting from root and no additional filters
      *
      * @return BlogResult wrapper object
+     * throws UnableToGetBlogException throw when the blogs cannot be read from the repository.
      */
-    public BlogResult allBlogs() {
-        try {
+    public BlogResult allBlogs() throws UnableToGetLatestBlogsException {
             return blogService.getLatestBlogs("/", 1, Integer.MAX_VALUE, "");
-        } catch (UnableToGetLatestBlogsException e) {
-            log.error("Unable to get latest blogs.", e);
-        }
-        return null;
     }
 
     /**
@@ -48,14 +44,10 @@ public class BlogTemplatingFunctions {
      * @param categoryName Category (mgnl:category) name
      * @param workspace Category workspace name
      * @return BlogResult wrapper object
+     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetLatestBlogsException
      */
-    public BlogResult allBlogsByCategory(String categoryName, String workspace) {
-        try {
+    public BlogResult allBlogsByCategory(String categoryName, String workspace) throws UnableToGetLatestBlogsException {
             return blogService.getLatestBlogs("/", 1, Integer.MAX_VALUE, categoryName, workspace);
-        } catch (UnableToGetLatestBlogsException e) {
-            log.error("Unable to get latest blogs.");
-        }
-        return null;
     }
 
     /**
@@ -65,15 +57,10 @@ public class BlogTemplatingFunctions {
      * @param pageNumber page number
      * @param maxResultsPerPage Maximum results returned per page
      * @return BlogResult wrapper object
+     * @throws  nl.tricode.magnolia.blogs.exception.UnableToGetLatestBlogsException
      */
-    public BlogResult pagedBlogs(String searchRootPath, int pageNumber, int maxResultsPerPage) {
-        try {
+    public BlogResult pagedBlogs(String searchRootPath, int pageNumber, int maxResultsPerPage) throws UnableToGetLatestBlogsException {
             return blogService.getLatestBlogs(searchRootPath, pageNumber, maxResultsPerPage,"");
-        } catch (UnableToGetLatestBlogsException e) {
-            log.error("Unable to get latest blogs. searchRootPath: {}, pageNumber: {}, maxResultsPerPage: {}",
-                    searchRootPath, pageNumber, maxResultsPerPage);
-        }
-        return null;
     }
 
     /**
@@ -85,15 +72,10 @@ public class BlogTemplatingFunctions {
      * @param categoryName Category (mgnl:category) name
      * @param workspace Category workspace name
      * @return BlogResult wrapper object
+     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetLatestBlogsException
      */
-    public BlogResult pagedBlogsByCategory(String searchRootPath, int pageNumber, int maxResultsPerPage, String categoryName, String workspace) {
-        try {
+    public BlogResult pagedBlogsByCategory(String searchRootPath, int pageNumber, int maxResultsPerPage, String categoryName, String workspace) throws UnableToGetLatestBlogsException {
             return blogService.getLatestBlogs(searchRootPath, pageNumber, maxResultsPerPage, categoryName, workspace);
-        } catch (UnableToGetLatestBlogsException e) {
-            log.error("Unable to get the latest blogs. searchRootPath: {}, pageNumber: {}, maxResultsPerPage: {}, categoryName: {}, workspace: {}",
-                    searchRootPath, pageNumber, maxResultsPerPage, categoryName, workspace);
-        }
-        return null;
     }
 
     /**
@@ -101,8 +83,9 @@ public class BlogTemplatingFunctions {
      *
      * @param id Blog identifier
      * @return Blog content
+     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetBlogException
      */
-    public ContentMap blogContentById(String id) {
+    public ContentMap blogContentById(String id) throws UnableToGetBlogException {
         return templatingFunctions.asContentMap(blogById(id));
     }
 
@@ -111,8 +94,9 @@ public class BlogTemplatingFunctions {
      *
      * @param name Unique blog name
      * @return Blog content
+     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetBlogException
      */
-    public ContentMap blogContentByName(String name) {
+    public ContentMap blogContentByName(String name) throws UnableToGetBlogException {
         return templatingFunctions.asContentMap(blogByName(name));
     }
 
@@ -121,14 +105,10 @@ public class BlogTemplatingFunctions {
      *
      * @param id Blog identifier
      * @return Blog node
+     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetBlogException
      */
-    public Node blogById(String id) {
-        try {
-            return blogService.getBlogById(id);
-        } catch (UnableToGetBlogException e) {
-            log.error("Unable to get blog by id: {}", id);
-        }
-        return null;
+    public Node blogById(String id) throws UnableToGetBlogException {
+        return blogService.getBlogById(id);
     }
 
     /**
@@ -136,13 +116,9 @@ public class BlogTemplatingFunctions {
      *
      * @param name Unique blog name
      * @return Blog node
+     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetBlogException
      */
-    public Node blogByName(String name) {
-        try {
-            return blogService.getBlogByName(name);
-        } catch (UnableToGetBlogException e) {
-            log.error("Unable to get blog by it's name: {}", name);
-        }
-        return null;
+    public Node blogByName(String name) throws UnableToGetBlogException {
+        return blogService.getBlogByName(name);
     }
 }
