@@ -4,7 +4,7 @@
 
     <groupId>nl.tricode.magnolia</groupId>
     <artifactId>magnolia-blogs-module</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.2</version>
     <packaging>jar</packaging>
     <name>Tricode Magnolia Blog Module</name>
     <description>This module contains a Blog app for Magnolia CMS</description>
@@ -17,7 +17,7 @@
         <connection>scm:git:git@github.com:tricode/magnolia-blog.git</connection>
         <developerConnection>scm:git:git@github.com:tricode/magnolia-blog.git</developerConnection>
         <url>https://github.com/tricode/magnolia-blog.git</url>
-        <tag>HEAD</tag>
+        <tag>1.1.2</tag>
     </scm>
 
     <distributionManagement>
