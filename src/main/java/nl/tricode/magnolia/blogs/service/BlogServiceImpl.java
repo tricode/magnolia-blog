@@ -182,7 +182,7 @@ public class BlogServiceImpl implements BlogService {
         if (StringUtils.isBlank(blogName)) {
             return  "";
         }
-        final String blogFilter = String.format(" and p.name = '%s'", blogName);
+        final String blogFilter = String.format(" and name(p) = '%s'", blogName);
         final String jcrQuery = buildQuery(BlogsNodeTypes.Blog.NAME, StringUtils.defaultString("/"), blogFilter, "");
         try {
             List<Node> allBlogResults = executeQuery(jcrQuery, BlogWorkspaceUtil.COLLABORATION, BlogsNodeTypes.Blog.NAME);
