@@ -39,7 +39,7 @@ public interface BlogService {
     /**
      * Return the blog node for given identifier.
      *
-     * @param id Node identifier
+     * @param id Blog Node identifier
      * @throws nl.tricode.magnolia.blogs.exception.UnableToGetBlogException
      * @return Blog Node
      */
@@ -54,4 +54,25 @@ public interface BlogService {
      */
     Node getBlogByName(String name) throws UnableToGetBlogException;
 
+    /**
+     * Get related blog items for given blog id. Match will be made based on blog categories
+     *
+     * @param id Blog Node identifier
+     * @param maxResultsReturned Maximum returned blog items
+     * @return BlogResult wrapper object
+     * @throws UnableToGetBlogException
+     * @throws UnableToGetLatestBlogsException
+     */
+    BlogResult getRelatedBlogsById(String id, int maxResultsReturned) throws UnableToGetBlogException, UnableToGetLatestBlogsException;
+
+    /**
+     * Get related blog items for given blog name. Match will be made based on blog categories.
+     *
+     * @param name Unique blog name
+     * @param maxResultsReturned Maximum returned blog items
+     * @return BlogResult wrapper object
+     * @throws UnableToGetBlogException
+     * @throws UnableToGetLatestBlogsException
+     */
+    BlogResult getRelatedBlogsByName(String name, int maxResultsReturned) throws UnableToGetBlogException, UnableToGetLatestBlogsException;
 }

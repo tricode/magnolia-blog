@@ -121,4 +121,30 @@ public class BlogTemplatingFunctions {
     public Node blogByName(String name) throws UnableToGetBlogException {
         return blogService.getBlogByName(name);
     }
+
+    /**
+     * Get related blog items for given blog id. Match will be made based on blog categories.
+     *
+     * @param id Blog identifier
+     * @param maxResultsReturned Maximum returned blog items
+     * @return BlogResult wrapper object
+     * @throws UnableToGetBlogException
+     * @throws UnableToGetLatestBlogsException
+     */
+    public BlogResult relatedBlogsById(String id, int maxResultsReturned) throws UnableToGetBlogException, UnableToGetLatestBlogsException {
+        return blogService.getRelatedBlogsById(id, maxResultsReturned);
+    }
+
+    /**
+     * Get related blog items for given blog name. Match will be made based on blog categories.
+     *
+     * @param name Unique blog name
+     * @param maxResultsReturned Maximum returned blog items
+     * @return BlogResult wrapper object
+     * @throws UnableToGetBlogException
+     * @throws UnableToGetLatestBlogsException
+     */
+    public BlogResult relatedBlogsByName(String name, int maxResultsReturned) throws UnableToGetBlogException, UnableToGetLatestBlogsException {
+        return blogService.getRelatedBlogsByName(name, maxResultsReturned);
+    }
 }
