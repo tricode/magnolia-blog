@@ -48,6 +48,17 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
                 .addTask(new BootstrapSingleResource("Rendering config", "Installing new freemarker context attributes for blogfn alias",
                         "/mgnl-bootstrap/magnolia-blogs-module/config/config.modules.rendering.renderers.freemarker.contextAttributes.blogfn.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING));
         register(for_1_1_2);
+
+        final Delta for_1_1_3 = DeltaBuilder.update("1.1.3", "Updating blog module")
+                .addTask(new BootstrapSingleResource("Update config", "Add new dialog for initial activation date",
+                        "/mgnl-bootstrap/magnolia-blogs-module/dialogs/config.modules.magnolia-blogs-module.dialogs.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING))
+                .addTask(new BootstrapSingleResource("Update config", "Fix dialog setting on edit blog folder",
+                        "/mgnl-bootstrap/updates/config.modules.magnolia-blogs-module.apps.tricode-blogs.subApps.browser.actions.editFolder.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING))
+                .addTask(new BootstrapSingleResource("Update config", "Add new action for editing initial activation date",
+                        "/mgnl-bootstrap/updates/config.modules.magnolia-blogs-module.apps.tricode-blogs.subApps.browser.actions.editActivationDate.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING))
+                .addTask(new BootstrapSingleResource("Update config", "Add new edit activation date action to action bar",
+                        "/mgnl-bootstrap/updates/config.modules.magnolia-blogs-module.apps.tricode-blogs.subApps.browser.actionbar.sections.blog.groups.activationActions.items.editActivationDate.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING));
+        register(for_1_1_3);
 	}
 
 	/**

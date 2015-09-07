@@ -48,7 +48,7 @@ public class BlogServiceImpl implements BlogService {
             customJcrFilter =  "AND p.categories like '%" + categoryUuid + "%' ";
         }
 
-        final String orderBy = "p.[mgnl:created] desc";
+        final String orderBy = "p.initialActivationDate desc, p.[mgnl:created] desc";
 
         return findBlogs(searchRootPath, pageNumber, maxResultsPerPage, customJcrFilter, orderBy);
     }
