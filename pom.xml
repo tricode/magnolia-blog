@@ -24,12 +24,12 @@
         <repository>
             <id>tricode-magnolia-releases</id>
             <name>Tricode Magnolia Releases</name>
-            <url>https://artifacts.proxy.tricode.nl/content/repositories/magnolia-releases/</url>
+            <url>https://artifacts.proxy.tricode.nl/content/repositories/magnolia_github_releases/</url>
         </repository>
         <snapshotRepository>
             <id>tricode-magnolia-snapshots</id>
             <name>Tricode Magnolia Snapshots</name>
-            <url>http://artifacts.proxy.tricode.nl/content/repositories/magnolia-snapshots/</url>
+            <url>https://artifacts.proxy.tricode.nl/content/repositories/magnolia_github_snapshots/</url>
             <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
