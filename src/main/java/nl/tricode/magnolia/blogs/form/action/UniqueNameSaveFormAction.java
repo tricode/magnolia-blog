@@ -32,7 +32,7 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 
 /**
- * Action for saving Items in Forms provding a unique name based on the value for propertyName in definition.
+ * Action for saving Items in Forms providing a unique name based on the value for propertyName in definition.
  */
 public class UniqueNameSaveFormAction extends SaveFormAction {
 

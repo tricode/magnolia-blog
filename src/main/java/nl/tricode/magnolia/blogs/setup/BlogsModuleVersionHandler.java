@@ -30,7 +30,7 @@ import javax.jcr.ImportUUIDBehavior;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
+/**
  * This class is used to handle installation and updates of your module.
  */
 public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
@@ -61,20 +61,39 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
         register(for_1_1_3);
 	}
 
+	@Override
+	protected List<Task> getStartupTasks(InstallContext ctx) {
+		ModuleDefinition module = ctx.getCurrentModuleDefinition();
+
+		List<Task> startupTasks = new ArrayList<>(0);
+		startupTasks.addAll(super.getStartupTasks(ctx));
+
+		if ("SNAPSHOT".equals(module.getVersion().getClassifier())) {
+			// force updates for snapshots
+			startupTasks.add(new RemoveNodeTask("Remove snapshot information", "", "config", "/modules/" + MODULE_NAME + "/apps"));
+			startupTasks.add(new RemoveNodeTask("Remove snapshot information", "", "config", "/modules/" + MODULE_NAME + "/commands"));
+			startupTasks.add(new RemoveNodeTask("Remove snapshot information", "", "config", "/modules/" + MODULE_NAME + "/dialogs"));
+			startupTasks.add(new ModuleBootstrapTask());
+		}
+		startupTasks.addAll(getOptionalTasks(ctx));
+
+		return startupTasks;
+	}
+
 	/**
 	 * Method of installing optional Tasks
-	 * @param ctx
-	 * @return
+	 * @param ctx InstallContext
+	 * @return A list of optionalTasks.
 	 */
 	private List<Task> getOptionalTasks(InstallContext ctx) {
-		List<Task> tasks = new ArrayList<Task>(0);
+		List<Task> tasks = new ArrayList<>(0);
 
-		//TODO Check to make the bootstrap task more generic.
 		if (ctx.getHierarchyManager("config").isExist("/modules/tricode-tags")) {
 			log.info("Bootstrapping optional Tricode Tags for Tricode Blogs");
 			tasks.add(new BootstrapSingleResource("Tricode news optional Tags", "Bootstrap the optional tab for Tags", "/mgnl-bootstrap/optional/tricode-tags/config.modules.magnolia-blogs-module.apps.tricode-blogs.subApps.detail.editor.form.tabs.tagstab.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REPLACE_EXISTING));
 		}
 
+		/** Remove in future if we are changing to Magnolia category module*/
 		if (ctx.getHierarchyManager("config").isExist("/modules/tricode-categories")) {
 			log.info("Bootstrapping optional Tricode Categories for Tricode Blogs");
 			tasks.add(new BootstrapSingleResource("Tricode news optional Categories", "Bootstrap the optional tab for Categories", "/mgnl-bootstrap/optional/tricode-categories/config.modules.magnolia-blogs-module.apps.tricode-blogs.subApps.detail.editor.form.tabs.categoriestab.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REPLACE_EXISTING));
@@ -84,7 +103,7 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 
 	@Override
 	protected List<Task> getDefaultUpdateTasks(Version forVersion) {
-		final List<Task> tasks = new ArrayList<Task>();
+		final List<Task> tasks = new ArrayList<>();
 		tasks.addAll(super.getDefaultUpdateTasks(forVersion));
 
 		// Always update templates, resources no matter what version is updated!
@@ -95,7 +114,7 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 
 	@Override
 	protected List<Task> getExtraInstallTasks(InstallContext installContext) {
-		final List<Task> tasks = new ArrayList<Task>();
+		final List<Task> tasks = new ArrayList<>();
 		tasks.addAll(super.getExtraInstallTasks(installContext));
 
 		tasks.add(new ModuleDependencyBootstrapTask("/mgnl-bootstrap-samples/optional", "tricode-tags"));

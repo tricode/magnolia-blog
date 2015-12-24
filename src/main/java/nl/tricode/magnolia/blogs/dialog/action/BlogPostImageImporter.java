@@ -57,7 +57,7 @@ import java.util.Iterator;
  */
 public class BlogPostImageImporter {
 	private static final Logger log = LoggerFactory.getLogger(BlogPostImageImporter.class);
-	private static HashMap<String, String> recentlyProcessedURLs = new HashMap<String, String>();
+	private static HashMap<String, String> recentlyProcessedURLs = new HashMap<>();
 	private Element blogPostContent;
 	private Session damSession;
 

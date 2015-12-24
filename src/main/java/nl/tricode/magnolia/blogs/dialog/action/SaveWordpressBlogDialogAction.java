@@ -87,7 +87,7 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 
 				/** Only open contacts session when needed.*/
 				if (this.shouldImportContacts) {
-					this.recentlyCreatedMagnoliaContacts = new HashMap<String, String>();
+					this.recentlyCreatedMagnoliaContacts = new HashMap<>();
 					this.contactSession = MgnlContext.getJCRSession(BlogWorkspaceUtil.CONTACTS);
 				}
 
@@ -166,8 +166,8 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 		String username = (String) item.getItemProperty("username").getValue();
 		String password = (String) item.getItemProperty("password").getValue();
 
-		Vector<Object> request = new Vector<Object>();
-		Vector<String> expectedReturnValues = new Vector<String>();
+		Vector<Object> request = new Vector<>();
+		Vector<String> expectedReturnValues = new Vector<>();
 		expectedReturnValues.addElement("post_content");
 		expectedReturnValues.addElement("post_title");
 		expectedReturnValues.addElement("post_author");
@@ -240,7 +240,7 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 
 	/**
 	 * Encode strings to UTF-8.
-	 * @param stringToEncode
+	 * @param stringToEncode String that needs to be encoded.
 	 * @return
 	 */
 	private String encodeString(String stringToEncode) {
@@ -286,8 +286,8 @@ public class SaveWordpressBlogDialogAction extends AbstractAction<SaveWordpressB
 	 * @return the request
 	 */
 	private Vector<Object> buildGetUserRequest(String wordpressUserID) {
-		Vector<Object> request = new Vector<Object>();
-		Vector<String> expectedReturnValues = new Vector<String>();
+		Vector<Object> request = new Vector<>();
+		Vector<String> expectedReturnValues = new Vector<>();
 		expectedReturnValues.addElement(FIRSTNAME);
 		expectedReturnValues.addElement(LASTNAME);
 		expectedReturnValues.addElement(EMAIL);

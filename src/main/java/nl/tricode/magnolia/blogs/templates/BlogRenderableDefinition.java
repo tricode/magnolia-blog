@@ -1,20 +1,20 @@
 /**
- *      Tricode Blog module
- *      Is a Blog module for Magnolia CMS.
- *      Copyright (C) 2015  Tricode Business Integrators B.V.
- *
- * 	  This program is free software: you can redistribute it and/or modify
- *		  it under the terms of the GNU General Public License as published by
- *		  the Free Software Foundation, either version 3 of the License, or
- *		  (at your option) any later version.
- *
- *		  This program is distributed in the hope that it will be useful,
- *		  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *		  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *		  GNU General Public License for more details.
- *
- *		  You should have received a copy of the GNU General Public License
- *		  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Tricode Blog module
+ * Is a Blog module for Magnolia CMS.
+ * Copyright (C) 2015  Tricode Business Integrators B.V.
+ * <p/>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p/>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p/>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package nl.tricode.magnolia.blogs.templates;
 
@@ -23,13 +23,13 @@ import info.magnolia.context.MgnlContext;
 import info.magnolia.context.WebContext;
 import info.magnolia.jcr.util.ContentMap;
 import info.magnolia.jcr.util.NodeUtil;
-import info.magnolia.jcr.wrapper.I18nNodeWrapper;
 import info.magnolia.rendering.model.RenderingModel;
 import info.magnolia.rendering.model.RenderingModelImpl;
 import info.magnolia.rendering.template.RenderableDefinition;
 import info.magnolia.templating.functions.TemplatingFunctions;
 import nl.tricode.magnolia.blogs.BlogsNodeTypes;
 import nl.tricode.magnolia.blogs.util.BlogWorkspaceUtil;
+import nl.tricode.magnolia.blogs.util.JcrUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -44,16 +44,24 @@ import javax.jcr.query.Query;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Magnolia Renderable Definition for blog items.
- *
- * @author gtenham
  */
 public class BlogRenderableDefinition<RD extends RenderableDefinition> extends RenderingModelImpl {
-	private static final Logger log = LoggerFactory.getLogger(BlogRenderableDefinition.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BlogRenderableDefinition.class);
 
 	private static final int DEFAULT_LATEST_COUNT = 5;
 	private static final String BLOG_NODE_TYPE = "mgnl:blog";
@@ -84,14 +92,13 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 		super(content, definition, parent);
 		this.templatingFunctions = templatingFunctions;
 
-		filter = new HashMap<String, String>();
-		// TODO: why remove from iterator?
+		filter = new HashMap<>();
 		final Iterator<Entry<String, String>> it = MgnlContext.getWebContext().getParameters().entrySet().iterator();
 		while (it.hasNext()) {
 			final Map.Entry<String, String> pairs = it.next();
 			if (WHITELISTED_PARAMETERS.contains(pairs.getKey()) && StringUtils.isNotEmpty(pairs.getValue())) {
 				filter.put(pairs.getKey(), pairs.getValue());
-				log.debug("Added to filter: " + pairs.getKey());
+				LOG.debug("Added to filter: " + pairs.getKey());
 			}
 			it.remove(); // avoids a ConcurrentModificationException
 		}
@@ -115,8 +122,8 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 			resultSize = Integer.parseInt(maxResultSize);
 		}
 		String customFilters = getAuthorPredicate() + getTagPredicate(filter) + getCategoryPredicate(filter) + getDateCreatedPredicate();
-		final String sqlBlogItems = buildQuery(path, true, customFilters, BLOG_NODE_TYPE);
-		return templatingFunctions.asContentMapList(getWrappedNodesFromQuery(sqlBlogItems, resultSize, getPageNumber(), BlogsNodeTypes.Blog.NAME));
+		final String sqlBlogItems = JcrUtils.buildQuery(path, BLOG_NODE_TYPE, true, customFilters);
+		return templatingFunctions.asContentMapList(JcrUtils.getWrappedNodesFromQuery(sqlBlogItems, resultSize, getPageNumber(), BlogsNodeTypes.Blog.NAME));
 	}
 
 	/**
@@ -127,6 +134,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 	 * @return List of blog nodes sorted by date created in descending order
 	 * @throws RepositoryException
 	 */
+	@SuppressWarnings("unused") //Used in freemarker components.
 	public List<ContentMap> getLatestBlogs(String path, String maxResultSize) throws RepositoryException {
 		return getLatest(path, maxResultSize, BLOG_NODE_TYPE, getPageNumber(), BlogsNodeTypes.Blog.NAME);
 	}
@@ -136,24 +144,25 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 		if (StringUtils.isNumeric(maxResultSize)) {
 			resultSize = Integer.parseInt(maxResultSize);
 		}
-		final String sqlBlogItems = buildQuery(path, nodeType);
-		return templatingFunctions.asContentMapList(getWrappedNodesFromQuery(sqlBlogItems, resultSize, pageNumber, nodeTypeName));
+		final String sqlBlogItems = JcrUtils.buildQuery(path, nodeType);
+		return templatingFunctions.asContentMapList(JcrUtils.getWrappedNodesFromQuery(sqlBlogItems, resultSize, pageNumber, nodeTypeName));
 	}
 
 	/**
-	 * @param path
+	 * @param path          Repository path
 	 * @param maxResultSize the result size that is returned
 	 * @param categoryUuid  the category uuid to take only the blogs from this category
 	 * @throws RepositoryException
 	 * @returns a list of blog nodes sorted by date created in descending order for the specified maxResultSize parameter
 	 */
+	@SuppressWarnings("unused") //Used in freemarker components.
 	public List<ContentMap> getLatestBlogs(String path, String maxResultSize, String categoryUuid) throws RepositoryException {
 		int resultSize = DEFAULT_LATEST_COUNT;
 		if (StringUtils.isNumeric(maxResultSize)) {
 			resultSize = Integer.parseInt(maxResultSize);
 		}
 		StringBuilder queryString = formQueryString(new StringBuilder(), categoryUuid);
-		return templatingFunctions.asContentMapList(getWrappedNodesFromQuery(
+		return templatingFunctions.asContentMapList(JcrUtils.getWrappedNodesFromQuery(
 				  "SELECT p.* from [mgnl:blog] AS p WHERE ISDESCENDANTNODE(p,'/') AND CONTAINS(p.categories, '" +
 							 categoryUuid + "') " + queryString + " ORDER BY p.[mgnl:created] desc",
 				  resultSize, 1, BlogsNodeTypes.Blog.NAME));
@@ -178,11 +187,10 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 			if (!templatingFunctions.children(childCategory).isEmpty()) {
 				formQueryString(query, childCategory.getJCRNode().getIdentifier());
 			}
-			query.append("OR CONTAINS(p.categories, '" + childCategory.getJCRNode().getIdentifier() + "') ");
+			query.append("OR CONTAINS(p.categories, '").append(childCategory.getJCRNode().getIdentifier()).append("') ");
 		}
 		return query;
 	}
-
 
 	/**
 	 * Get total number of blog posts for current state.
@@ -194,20 +202,20 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 	 */
 	public int getBlogCount(String path, boolean useFilters) throws RepositoryException {
 		String customFilters = getAuthorPredicate() + getTagPredicate(filter) + getCategoryPredicate(filter) + getDateCreatedPredicate();
-		final String sqlBlogItems = buildQuery(path, useFilters, customFilters, BLOG_NODE_TYPE);
+		final String sqlBlogItems = JcrUtils.buildQuery(path, BLOG_NODE_TYPE, useFilters, customFilters);
 		return IteratorUtils.toList(QueryUtil.search(BlogWorkspaceUtil.COLLABORATION, sqlBlogItems, Query.JCR_SQL2, BlogsNodeTypes.Blog.NAME)).size();
 	}
 
 	public int getRelatedBlogCount(String filterProperty, String filterIdentifier) throws RepositoryException {
-		final String sqlBlogItems = "SELECT p.* from [mgnl:blog] AS p WHERE ISDESCENDANTNODE(p,'/') AND contains(p." + filterProperty + ", '" + filterIdentifier + "')";
+		final String sqlBlogItems = JcrUtils.buildBlogCountQuery(filterProperty, filterIdentifier);
 		return IteratorUtils.toList(QueryUtil.search(BlogWorkspaceUtil.COLLABORATION, sqlBlogItems, Query.JCR_SQL2, BlogsNodeTypes.Blog.NAME)).size();
 	}
 
 	/**
 	 * Determine if older blog posts exists
 	 *
-	 * @param path
-	 * @param maxResultSize
+	 * @param path          Path in the repository.
+	 * @param maxResultSize Maximum result size.
 	 * @return Boolean true when older blog posts exists
 	 */
 	public boolean hasOlderPosts(String path, int maxResultSize) throws RepositoryException {
@@ -220,8 +228,8 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 	/**
 	 * Determine if older blog posts exists
 	 *
-	 * @param path
-	 * @param maxResultSize
+	 * @param path          Path in the repository.
+	 * @param maxResultSize Maximum result size.
 	 * @return Boolean true when older blog posts exists
 	 */
 	public boolean hasOlderPosts(String path, int maxResultSize, long totalBlogs, int pageNumber) throws RepositoryException {
@@ -232,10 +240,11 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 	/**
 	 * Determine the next following page number containing older blog posts
 	 *
-	 * @param path
-	 * @param maxResultSize
+	 * @param path          Path in the repository.
+	 * @param maxResultSize Maximum result size.
 	 * @return page number with older blog posts
 	 */
+	@SuppressWarnings("unused") //Used in freemarker components.
 	public int pageOlderPosts(String path, int maxResultSize) throws RepositoryException {
 		return (hasOlderPosts(path, maxResultSize)) ? getPageNumber() + 1 : getPageNumber();
 	}
@@ -254,6 +263,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 	 *
 	 * @return page number with newer blog posts
 	 */
+	@SuppressWarnings("unused") //Used in freemarker components.
 	public int pageNewerPosts() {
 		return (hasNewerPosts()) ? getPageNumber() - 1 : getPageNumber();
 	}
@@ -261,9 +271,10 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 	/**
 	 * Get tags for given blog node
 	 *
-	 * @param blog
+	 * @param blog ContentMap of blogs.
 	 * @return List of tag nodes
 	 */
+	@SuppressWarnings("unused") //Used in freemarker components.
 	public List<ContentMap> getBlogTags(ContentMap blog) {
 		return getItems(blog.getJCRNode(), BlogsNodeTypes.Blog.PROPERTY_TAGS, BlogWorkspaceUtil.COLLABORATION);
 	}
@@ -273,12 +284,13 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 	 *
 	 * @return Collection of tags with relative score
 	 */
+	@SuppressWarnings("unused") //Used in freemarker components.
 	public List<CloudMap> getTagCloud() {
 		try {
 			final Iterable<Node> nodes = NodeUtil.asIterable(QueryUtil.search(BlogWorkspaceUtil.COLLABORATION, "SELECT p.* from [mgnl:tag] AS p WHERE ISDESCENDANTNODE(p,'/')"));
 			return getCloudData(nodes, BlogsNodeTypes.Blog.PROPERTY_TAGS, false);
 		} catch (RepositoryException e) {
-			log.error("Exception while getting tag cloud", e.getMessage());
+			LOG.error("Exception while getting tag cloud", e.getMessage());
 			return Collections.emptyList();
 		}
 	}
@@ -286,9 +298,10 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 	/**
 	 * Get categories for given blog node
 	 *
-	 * @param blog
+	 * @param blog ContentMap of blogs.
 	 * @return List of category nodes
 	 */
+	@SuppressWarnings("unused") //Used in freemarker components.
 	public List<ContentMap> getBlogCategories(ContentMap blog) {
 		return getItems(blog.getJCRNode(), BlogsNodeTypes.Blog.PROPERTY_CATEGORIES, BlogWorkspaceUtil.COLLABORATION);
 	}
@@ -298,12 +311,13 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 	 *
 	 * @return Collection of categories with relative score
 	 */
+	@SuppressWarnings("unused") //Used in freemarker components.
 	public List<CloudMap> getCategoryCloud() {
 		try {
 			final Iterable<Node> nodes = NodeUtil.asIterable(QueryUtil.search(BlogWorkspaceUtil.COLLABORATION, "SELECT p.* from [mgnl:category] AS p WHERE ISDESCENDANTNODE(p,'/')"));
 			return getCloudData(nodes, BlogsNodeTypes.Blog.PROPERTY_CATEGORIES, false);
 		} catch (RepositoryException e) {
-			log.error("Exception while getting category cloud", e.getMessage());
+			LOG.error("Exception while getting category cloud", e.getMessage());
 			return Collections.emptyList();
 		}
 	}
@@ -313,24 +327,25 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 	 *
 	 * @return Collection of categories with relative score
 	 */
+	@SuppressWarnings("unused") //Used in freemarker components.
 	public List<CloudMap> getAuthorCloud() {
 		try {
 			final Iterable<Node> nodes = NodeUtil.asIterable(QueryUtil.search(BlogWorkspaceUtil.CONTACTS, "SELECT p.* from [mgnl:contact] AS p WHERE ISDESCENDANTNODE(p,'/')"));
 			return getCloudData(nodes, BlogsNodeTypes.Blog.PROPERTY_AUTHOR, true);
 		} catch (RepositoryException e) {
-			log.error("Exception while getting author cloud", e.getMessage());
+			LOG.error("Exception while getting author cloud", e.getMessage());
 			return Collections.emptyList();
 		}
 	}
-
 
 	/**
 	 * Get distinct year and month list for all available blogs
 	 *
 	 * @return List<Map<String, Object>> containing properties <i>year</i> and <i>month</i>
 	 */
+	@SuppressWarnings("unused") //Used in freemarker components.
 	public List<Map<String, Object>> getArchivedDates() {
-		final Set<Map<String, Object>> set = new HashSet<Map<String, Object>>();
+		final Set<Map<String, Object>> set = new HashSet<>();
 
 		for (Node blog : getAllBlogs()) {
 			try {
@@ -338,19 +353,19 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 				final int year = dateCreated.get(Calendar.YEAR);
 				final int month = dateCreated.get(Calendar.MONTH) + 1;
 
-				final Map<String, Object> map = new HashMap<String, Object>();
+				final Map<String, Object> map = new HashMap<>();
 				map.put("year", Integer.toString(year));
 				map.put("month", String.format("%02d", month));
 				set.add(map);
 			} catch (RepositoryException e) {
-				log.debug("Exception getting created date", e.getMessage());
+				LOG.debug("Exception getting created date", e.getMessage());
 			}
 		}
-		return new ArrayList<Map<String, Object>>(set);
+		return new ArrayList<>(set);
 	}
 
 	private List<CloudMap> getCloudData(Iterable<Node> nodeList, String propName, boolean excludeNonExisting) throws RepositoryException {
-		final List<CloudMap> cloudData = new ArrayList<CloudMap>(0);
+		final List<CloudMap> cloudData = new ArrayList<>(0);
 		final int maxCloudUsage = getBlogCount("/", false);
 
 		for (Node entry : nodeList) {
@@ -361,13 +376,13 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 				}
 
 				final int scale = getScale(count, maxCloudUsage);
-				if (log.isDebugEnabled()) {
-					log.debug(count + " blogs out of " + maxCloudUsage + " leaving a score of " + scale);
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(count + " blogs out of " + maxCloudUsage + " leaving a score of " + scale);
 				}
 
 				cloudData.add(new CloudMap(entry, count, scale));
 			} catch (RepositoryException e) {
-				log.warn("Exception getting related blog count", e.getMessage());
+				LOG.warn("Exception getting related blog count", e.getMessage());
 			}
 		}
 		return cloudData;
@@ -393,12 +408,12 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 	 * @return List<Node> blogs
 	 */
 	public List<Node> getAllBlogs() {
-		final String sqlBlogItems = buildQuery("/", BLOG_NODE_TYPE);
+		final String sqlBlogItems = JcrUtils.buildQuery("/", BLOG_NODE_TYPE);
 		try {
 			final NodeIterator items = QueryUtil.search(BlogWorkspaceUtil.COLLABORATION, sqlBlogItems, Query.JCR_SQL2, BlogsNodeTypes.Blog.NAME);
 			return NodeUtil.asList(NodeUtil.asIterable(items));
 		} catch (RepositoryException e) {
-			log.error("Exception getting all blogs", e.getMessage());
+			LOG.error("Exception getting all blogs", e.getMessage());
 			return Collections.emptyList();
 		}
 	}
@@ -420,7 +435,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 					return "AND p.author = '" + authorId + "' ";
 				}
 			} else {
-				log.debug("Author [{}] not found", filter.get(PARAM_AUTHOR));
+				LOG.debug("Author [{}] not found", filter.get(PARAM_AUTHOR));
 			}
 		}
 		return StringUtils.EMPTY;
@@ -474,7 +489,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 					return "AND p.tags like '%" + tagId + "%' ";
 				}
 			} else {
-				log.debug("Tag [{}] not found", filter.get(PARAM_TAG));
+				LOG.debug("Tag [{}] not found", filter.get(PARAM_TAG));
 			}
 		}
 		return StringUtils.EMPTY;
@@ -489,88 +504,14 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 					return "AND p.categories like '%" + categoryId + "%' ";
 				}
 			} else {
-				log.debug("Category [{}] not found", filter.get(PARAM_CATEGORY));
+				LOG.debug("Category [{}] not found", filter.get(PARAM_CATEGORY));
 			}
 		}
 		return StringUtils.EMPTY;
 	}
 
-	/**
-	 * Query blog items using JCR SQL2 syntax.
-	 *
-	 * @param query         Query string
-	 * @param maxResultSize Max results returned
-	 * @param pageNumber    paging number
-	 * @return List<Node> List of blog nodes
-	 * @throws javax.jcr.RepositoryException
-	 */
-	public static List<Node> getWrappedNodesFromQuery(String query, int maxResultSize, int pageNumber, String nodeTypeName) throws RepositoryException {
-		return getWrappedNodesFromQuery(query, maxResultSize, pageNumber, nodeTypeName, BlogWorkspaceUtil.COLLABORATION);
-	}
-
-	/**
-	 * Query items using JCR SQL2 syntax.
-	 *
-	 * @param query         Query string
-	 * @param maxResultSize Max results returned
-	 * @param pageNumber    paging number
-	 * @return List<Node> List of nodes
-	 * @throws javax.jcr.RepositoryException
-	 */
-	public static List<Node> getWrappedNodesFromQuery(String query, int maxResultSize, int pageNumber, String nodeTypeName, String workspace) throws RepositoryException {
-		final List<Node> itemsListPaged = new ArrayList<Node>(0);
-		final NodeIterator items = QueryUtil.search(workspace, query, Query.JCR_SQL2, nodeTypeName);
-
-		// Paging result set
-		final int startRow = (maxResultSize * (pageNumber - 1));
-		if (startRow > 0) {
-			try {
-				items.skip(startRow);
-			} catch (NoSuchElementException e) {
-				//log.error("No more blog items found beyond this item number: " + startRow);
-			}
-		}
-
-		int count = 1;
-		while (items.hasNext() && count <= maxResultSize) {
-			itemsListPaged.add(new I18nNodeWrapper(items.nextNode()));
-			count++;
-		}
-
-		return itemsListPaged;
-	}
-
-	public static List<Node> getWrappedNodesFromQuery(String query, String nodeTypeName, String workspace) throws RepositoryException {
-		final List<Node> itemsListPaged = new ArrayList<Node>(0);
-		final NodeIterator items = QueryUtil.search(workspace, query, Query.JCR_SQL2, nodeTypeName);
-
-		while (items.hasNext()) {
-			itemsListPaged.add(new I18nNodeWrapper(items.nextNode()));
-		}
-
-		return itemsListPaged;
-	}
-
-
-	public String buildQuery(String path, boolean useFilters, String customFilters, String contentType) {
-		String filters = StringUtils.EMPTY;
-		if (useFilters) {
-			filters = customFilters;
-		}
-		return "SELECT p.* FROM ["+ contentType +"] AS p " +
-				  "WHERE ISDESCENDANTNODE(p, '" + StringUtils.defaultIfEmpty(path, "/") + "') " +
-				  filters +
-				  "ORDER BY p.[mgnl:created] desc";
-	}
-
-	public String buildQuery(String path, String contentType) {
-		return "SELECT p.* FROM ["+ contentType +"] AS p " +
-				  "WHERE ISDESCENDANTNODE(p, '" + StringUtils.defaultIfEmpty(path, "/") + "') " +
-				  "ORDER BY p.[mgnl:created] desc";
-	}
-
 	public List<ContentMap> getItems(Node item, String nodeType, String workspace) {
-		final List<ContentMap> items = new ArrayList<ContentMap>(0);
+		final List<ContentMap> items = new ArrayList<>(0);
 
 		try {
 			final Value[] values = item.getProperty(nodeType).getValues();
@@ -580,7 +521,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
 				}
 			}
 		} catch (RepositoryException e) {
-			log.error("Exception while getting items", e.getMessage());
+			LOG.error("Exception while getting items", e.getMessage());
 		}
 		return items;
 	}

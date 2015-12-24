@@ -30,7 +30,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 public class GenericColumnFormatter {
-	private static final Logger log = LoggerFactory.getLogger(GenericColumnFormatter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GenericColumnFormatter.class);
 
 	public static Object generateCellHelper(Item jcrItem, String nodeTypeName, String propertyTitle) {
 		if (jcrItem != null && jcrItem.isNode()) {
@@ -54,7 +54,7 @@ public class GenericColumnFormatter {
 					}
 				}
 			} catch (RepositoryException e) {
-				log.info("Unable to get " + propertyTitle + " of blog for column", e);
+				LOG.info("Unable to get " + propertyTitle + " of blog for column", e);
 			}
 		}
 		return StringUtils.EMPTY;

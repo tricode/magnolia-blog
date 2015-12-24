@@ -8,7 +8,6 @@ import java.util.List;
  * Blog result items wrapper class
  */
 public class BlogResult implements Serializable {
-
     private int totalCount;
     private int numPages;
     private List<Node> results;

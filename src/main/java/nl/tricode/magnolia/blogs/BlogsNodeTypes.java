@@ -23,6 +23,7 @@ import info.magnolia.jcr.util.NodeTypes;
 /**
  * Blog defined NodeTypes.
  */
+@SuppressWarnings("unused") //Node representation in java.
 public class BlogsNodeTypes {
     /**
      * Represents the nodeType mgnl:blog.

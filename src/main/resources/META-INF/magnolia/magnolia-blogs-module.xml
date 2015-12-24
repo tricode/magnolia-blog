@@ -21,27 +21,14 @@
         </component>
     </components>
 
-    <!-- Todo: is this still needed? Looks like the "old" Magnolia 5.0 way -->
-    <components>
-        <id>app-blogs</id>
-    </components>
-
-    <components>
-        <id>app-blogs-browser</id>
-    </components>
-
-    <components>
-        <id>app-blogs-detail</id>
-    </components>
-
     <dependencies>
         <dependency>
             <name>core</name>
-            <version>5.3/*</version>
+            <version>5.4/*</version>
         </dependency>
         <dependency>
             <name>ui-admincentral</name>
-            <version>5.3/*</version>
+            <version>5.4/*</version>
         </dependency>
         <dependency>
             <name>contacts</name>

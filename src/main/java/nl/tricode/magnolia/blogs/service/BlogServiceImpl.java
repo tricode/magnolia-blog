@@ -169,7 +169,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     private String getCategoriesLucenePredicate(List<String> categories, String boostFactor) {
-        StringBuffer searchTermPredicate = new StringBuffer();
+        StringBuilder searchTermPredicate = new StringBuilder();
 
         for (String categoryName : categories) {
             if (categoryName.contains(" ")) {
@@ -178,9 +178,7 @@ public class BlogServiceImpl implements BlogService {
                 searchTermPredicate.append(categoryName);
             }
             searchTermPredicate.append(boostFactor);
-            //searchTermPredicate.append(SEARCH_FUZZY_FACTOR);
             searchTermPredicate.append(" OR ");
-
         }
         return StringUtils.stripEnd(searchTermPredicate.toString(),"OR ");
     }
@@ -195,7 +193,7 @@ public class BlogServiceImpl implements BlogService {
      * @throws javax.jcr.RepositoryException
      */
     private List<Node> executeQuery(String statement, String workspace, String returnItemType) throws RepositoryException {
-        List<Node> nodeList = new ArrayList<Node>(0);
+        List<Node> nodeList = new ArrayList<>(0);
 
         NodeIterator items = QueryUtil.search(workspace, statement, Query.JCR_SQL2, returnItemType);
         log.debug("Query Executed: {}", statement);
@@ -216,10 +214,8 @@ public class BlogServiceImpl implements BlogService {
      * @return True when node needs to be filtered out of the result set
      */
     private Boolean filterNode(Node node) {
-        // Additional filters after jcr query, defaults to false for now
-        Boolean filterNode = false;
-
-        return filterNode;
+        /** Additional filters after jcr query, defaults to false for now */
+        return false;
     }
 
     /**
@@ -249,7 +245,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     private List<Node> getPagedResults(List<Node> results, int pageNumber, int maxResultsPerPage) {
-        List<Node> nodeListPaged = new ArrayList<Node>(0);
+        List<Node> nodeListPaged = new ArrayList<>(0);
         final int total = results.size();
         final int startRow = (maxResultsPerPage * (pageNumber - 1));
         int newLimit = maxResultsPerPage;
@@ -299,7 +295,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     private List<String> convertCategoryValuesToNamesList(Property categories) throws RepositoryException {
-        List<String> categoryNames = new ArrayList<String>(0);
+        List<String> categoryNames = new ArrayList<>(0);
 
         Value[] values = categories.getValues();
 
@@ -324,5 +320,4 @@ public class BlogServiceImpl implements BlogService {
         }
         return categoryNames;
     }
-
 }

@@ -23,9 +23,6 @@ import info.magnolia.cms.core.Path;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-/**
- * Created by mvdmark on 1-7-2015.
- */
 public class BlogWorkspaceUtil {
 	public static final String COLLABORATION = "collaboration";
 	public static final String CONTACTS = "contacts";
@@ -35,8 +32,8 @@ public class BlogWorkspaceUtil {
 	/**
 	 * Filters characters like ?, !, etc and replaces spaces with -
 	 *
-	 * @param input
-	 * @return output
+	 * @param input Non filtered string.
+	 * @return output Filtered string on non word characters.
 	 */
 	public static String filterNonWordCharacters(String input) {
 		String output = input.trim();

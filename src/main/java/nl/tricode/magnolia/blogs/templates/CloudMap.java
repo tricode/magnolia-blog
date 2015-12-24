@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class CloudMap implements Map<String, Object> {
-    private static final Logger log = LoggerFactory.getLogger(CloudMap.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CloudMap.class);
 
     private final Map<String, Object> cloudProperties = new HashMap<String, Object>(6);
     private final Node content;
@@ -58,7 +58,7 @@ public class CloudMap implements Map<String, Object> {
             cloudProperties.put("count", count);
             cloudProperties.put("scale", scale);
         } catch (RepositoryException e) {
-            log.debug("Exception while creating cloud map", e);
+            LOG.debug("Exception while creating cloud map", e);
         }
     }
 
@@ -134,7 +134,7 @@ public class CloudMap implements Map<String, Object> {
                     return LinkUtil.convertLinksFromUUIDPattern(stringValue,
                             LinkTransformerManager.getInstance().getBrowserLink(content.getPath()));
                 } catch (LinkException e) {
-                    log.warn("Failed to parse links with from " + stringValue, e);
+                    LOG.warn("Failed to parse links with from " + stringValue, e);
                 }
             }
         }
