@@ -34,6 +34,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
@@ -60,8 +61,8 @@ public class BlogRenderableDefinitionTest {
     private RenderableDefinition mockDefinition;
     @Mock
     private RenderingModel mockParent;
-    @Spy
-    private TemplatingFunctions spyTemplatingFunctions = new TemplatingFunctions(mock(Provider.class));
+
+    private TemplatingFunctions spyTemplatingFunctions;
     @Mock
     private WebContext mockWebContext;
     @Mock
@@ -80,6 +81,9 @@ public class BlogRenderableDefinitionTest {
 
         Components.setComponentProvider(mockComponentProvider);
         doReturn(i18nContentSupport).when(mockComponentProvider).getComponent(I18nContentSupport.class);
+
+
+	     spyTemplatingFunctions = Mockito.spy(new TemplatingFunctions(mock(Provider.class)));
     }
 
     @Test
@@ -299,6 +303,6 @@ public class BlogRenderableDefinitionTest {
     }
 
     private void createInstance() {
-        definition = new BlogRenderableDefinition<RenderableDefinition>(mockNode, mockDefinition, mockParent, spyTemplatingFunctions);
+        definition = new BlogRenderableDefinition<>(mockNode, mockDefinition, mockParent, spyTemplatingFunctions);
     }
 }
