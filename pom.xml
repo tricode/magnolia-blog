@@ -35,7 +35,7 @@
     </distributionManagement>
 
     <properties>
-        <magnoliaVersion>5.4.3</magnoliaVersion>
+        <magnoliaVersion>5.4.4</magnoliaVersion>
         <junitVersion>4.12</junitVersion>
         <javaVersion>1.7</javaVersion>
     </properties>
