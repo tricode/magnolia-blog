@@ -1,4 +1,4 @@
-/**
+/*
  *      Tricode Blog module
  *      Is a Blog module for Magnolia CMS.
  *      Copyright (C) 2015  Tricode Business Integrators B.V.
@@ -22,31 +22,33 @@ import com.vaadin.ui.Table;
 import info.magnolia.contacts.app.ContactsNodeTypes;
 import info.magnolia.context.MgnlContext;
 import info.magnolia.context.WebContext;
-
 import info.magnolia.jcr.util.NodeTypes;
 import info.magnolia.ui.vaadin.integration.jcr.JcrItemAdapter;
 import info.magnolia.ui.workbench.column.definition.PropertyColumnDefinition;
-
-
 import nl.tricode.magnolia.blogs.BlogsNodeTypes;
-import nl.tricode.magnolia.blogs.util.BlogWorkspaceUtil;
-
-import nl.tricode.magnolia.blogs.util.StringUtils;
+import nl.tricode.magnolia.blogs.util.BlogRepositoryConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.Session;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+/**
+ * Unit test(s) for {@link AuthorNameColumnFormatter}.
+ */
+@RunWith(MockitoJUnitRunner.class)
 public class AuthorNameColumnFormatterTest {
+
     private AuthorNameColumnFormatter formatter;
 
     @Mock
@@ -56,8 +58,6 @@ public class AuthorNameColumnFormatterTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
         formatter = new AuthorNameColumnFormatter(new PropertyColumnDefinition());
 
         MgnlContext.setInstance(mockWebContext);
@@ -68,7 +68,7 @@ public class AuthorNameColumnFormatterTest {
         Object itemId = "1";
 
         Object result = formatter.generateCell(mockTable, itemId, null);
-        Assert.assertEquals(StringUtils.EMPTY, result);
+        assertEquals(StringUtils.EMPTY, result);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class AuthorNameColumnFormatterTest {
         doReturn(false).when(mockProperty).isNode();
 
         Object result = formatter.generateCell(mockTable, itemId, null);
-        Assert.assertEquals(StringUtils.EMPTY, result);
+        assertEquals(StringUtils.EMPTY, result);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class AuthorNameColumnFormatterTest {
         doReturnIsNodeType(mockNode, NodeTypes.Page.NAME);
 
         Object result = formatter.generateCell(mockTable, itemId, null);
-        Assert.assertEquals(StringUtils.EMPTY, result);
+        assertEquals(StringUtils.EMPTY, result);
     }
 
     @Test
@@ -117,7 +117,7 @@ public class AuthorNameColumnFormatterTest {
         doReturnIsNodeType(mockNode, BlogsNodeTypes.Blog.NAME);
 
         Object result = formatter.generateCell(mockTable, itemId, null);
-        Assert.assertEquals(StringUtils.EMPTY, result);
+        assertEquals(StringUtils.EMPTY, result);
     }
 
     @Test
@@ -129,13 +129,13 @@ public class AuthorNameColumnFormatterTest {
 
         doReturn(mockItem).when(mockTable).getItem(itemId);
         doReturn(mockNode).when(mockItem).getJcrItem();
-	    doReturn(true).when(mockItem).isNode();
+        doReturn(true).when(mockItem).isNode();
         doReturn(true).when(mockNode).isNode();
         doReturnIsNodeType(mockNode, BlogsNodeTypes.Blog.NAME);
         doReturnProperty(mockNode, BlogsNodeTypes.Blog.PROPERTY_AUTHOR, StringUtils.EMPTY);
 
         Object result = formatter.generateCell(mockTable, itemId, null);
-        Assert.assertEquals(StringUtils.EMPTY, result);
+        assertEquals(StringUtils.EMPTY, result);
     }
 
     @Test
@@ -154,7 +154,7 @@ public class AuthorNameColumnFormatterTest {
         doReturnProperty(mockNode, BlogsNodeTypes.Blog.PROPERTY_AUTHOR, authorId);
 
         Object result = formatter.generateCell(mockTable, itemId, null);
-        Assert.assertEquals(StringUtils.EMPTY, result);
+        assertEquals(StringUtils.EMPTY, result);
     }
 
     @Test
@@ -177,14 +177,14 @@ public class AuthorNameColumnFormatterTest {
         doReturnIsNodeType(mockNode, BlogsNodeTypes.Blog.NAME);
         doReturnProperty(mockNode, BlogsNodeTypes.Blog.PROPERTY_AUTHOR, authorId);
 
-        doReturn(mockSession).when(mockWebContext).getJCRSession(BlogWorkspaceUtil.CONTACTS);
+        doReturn(mockSession).when(mockWebContext).getJCRSession(BlogRepositoryConstants.CONTACTS);
         doReturn(mockAuthorNode).when(mockSession).getNodeByIdentifier(authorId);
 
         doReturnProperty(mockAuthorNode, ContactsNodeTypes.Contact.PROPERTY_FIRST_NAME, firstName);
         doReturnProperty(mockAuthorNode, ContactsNodeTypes.Contact.PROPERTY_LAST_NAME, lastName);
 
         Object result = formatter.generateCell(mockTable, itemId, null);
-        Assert.assertEquals("hans de boer", result);
+        assertEquals("hans de boer", result);
     }
 
     @Test
@@ -206,13 +206,13 @@ public class AuthorNameColumnFormatterTest {
         doReturnIsNodeType(mockNode, BlogsNodeTypes.Blog.NAME);
         doReturnProperty(mockNode, BlogsNodeTypes.Blog.PROPERTY_AUTHOR, authorId);
 
-        doReturn(mockSession).when(mockWebContext).getJCRSession(BlogWorkspaceUtil.CONTACTS);
+        doReturn(mockSession).when(mockWebContext).getJCRSession(BlogRepositoryConstants.CONTACTS);
         doReturn(mockAuthorNode).when(mockSession).getNodeByIdentifier(authorId);
 
         doReturnProperty(mockAuthorNode, ContactsNodeTypes.Contact.PROPERTY_FIRST_NAME, firstName);
 
         Object result = formatter.generateCell(mockTable, itemId, null);
-        Assert.assertEquals("hans", result);
+        assertEquals("hans", result);
     }
 
     @Test
@@ -234,13 +234,13 @@ public class AuthorNameColumnFormatterTest {
         doReturnIsNodeType(mockNode, BlogsNodeTypes.Blog.NAME);
         doReturnProperty(mockNode, BlogsNodeTypes.Blog.PROPERTY_AUTHOR, authorId);
 
-        doReturn(mockSession).when(mockWebContext).getJCRSession(BlogWorkspaceUtil.CONTACTS);
+        doReturn(mockSession).when(mockWebContext).getJCRSession(BlogRepositoryConstants.CONTACTS);
         doReturn(mockAuthorNode).when(mockSession).getNodeByIdentifier(authorId);
 
         doReturnProperty(mockAuthorNode, ContactsNodeTypes.Contact.PROPERTY_LAST_NAME, lastName);
 
         Object result = formatter.generateCell(mockTable, itemId, null);
-        Assert.assertEquals("de boer", result);
+        assertEquals("de boer", result);
     }
 
     @Test
@@ -261,14 +261,14 @@ public class AuthorNameColumnFormatterTest {
         doReturnIsNodeType(mockNode, BlogsNodeTypes.Blog.NAME);
         doReturnProperty(mockNode, BlogsNodeTypes.Blog.PROPERTY_AUTHOR, authorId);
 
-        doReturn(mockSession).when(mockWebContext).getJCRSession(BlogWorkspaceUtil.CONTACTS);
+        doReturn(mockSession).when(mockWebContext).getJCRSession(BlogRepositoryConstants.CONTACTS);
         doReturn(mockAuthorNode).when(mockSession).getNodeByIdentifier(authorId);
 
         doReturnProperty(mockAuthorNode, ContactsNodeTypes.Contact.PROPERTY_FIRST_NAME, StringUtils.EMPTY);
         doReturnProperty(mockAuthorNode, ContactsNodeTypes.Contact.PROPERTY_LAST_NAME, StringUtils.EMPTY);
 
         Object result = formatter.generateCell(mockTable, itemId, null);
-        Assert.assertEquals(StringUtils.EMPTY, result);
+        assertEquals(StringUtils.EMPTY, result);
     }
 
     private static void doReturnIsNodeType(Node node, String nodeType) throws Exception {

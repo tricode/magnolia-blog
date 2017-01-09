@@ -1,4 +1,4 @@
-/**
+/*
  *      Tricode Blog module
  *      Is a Blog module for Magnolia CMS.
  *      Copyright (C) 2015  Tricode Business Integrators B.V.
@@ -20,10 +20,8 @@ package nl.tricode.magnolia.blogs.action;
 
 import info.magnolia.ui.contentapp.browser.action.RestoreItemPreviousVersionActionDefinition;
 
-/**
- * Created by mvdmark on 25-11-2014.
- */
 public class RestorePreviousBlogsDefinition extends RestoreItemPreviousVersionActionDefinition {
+
     private boolean showPreview = true;
 
     public RestorePreviousBlogsDefinition() {
@@ -42,4 +40,5 @@ public class RestorePreviousBlogsDefinition extends RestoreItemPreviousVersionAc
     public void setShowPreview(boolean showPreview) {
         this.showPreview = showPreview;
     }
+
 }

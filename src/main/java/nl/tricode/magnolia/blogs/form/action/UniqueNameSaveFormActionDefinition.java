@@ -1,4 +1,4 @@
-/**
+/*
  *      Tricode Blog module
  *      Is a Blog module for Magnolia CMS.
  *      Copyright (C) 2015  Tricode Business Integrators B.V.
@@ -21,6 +21,7 @@ package nl.tricode.magnolia.blogs.form.action;
 import info.magnolia.ui.form.action.SaveFormActionDefinition;
 
 public class UniqueNameSaveFormActionDefinition extends SaveFormActionDefinition {
+
     private String propertyName;
 
     public UniqueNameSaveFormActionDefinition() {

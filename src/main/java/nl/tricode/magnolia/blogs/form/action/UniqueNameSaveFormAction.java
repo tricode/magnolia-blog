@@ -1,4 +1,4 @@
-/**
+/*
  *      Tricode Blog module
  *      Is a Blog module for Magnolia CMS.
  *      Copyright (C) 2015  Tricode Business Integrators B.V.
@@ -36,8 +36,8 @@ import javax.jcr.RepositoryException;
  */
 public class UniqueNameSaveFormAction extends SaveFormAction {
 
-	private static final Logger log = LoggerFactory.getLogger(UniqueNameSaveFormAction.class);
-	
+    private static final Logger LOGGER = LoggerFactory.getLogger(UniqueNameSaveFormAction.class);
+
     public UniqueNameSaveFormAction(UniqueNameSaveFormActionDefinition definition, JcrNodeAdapter item,
                                     EditorCallback callback, EditorValidator validator) {
         super(definition, item, callback, validator);
@@ -45,19 +45,19 @@ public class UniqueNameSaveFormAction extends SaveFormAction {
 
     @Override
     protected UniqueNameSaveFormActionDefinition getDefinition() {
-        return (UniqueNameSaveFormActionDefinition)super.getDefinition();
+        return (UniqueNameSaveFormActionDefinition) super.getDefinition();
     }
 
     @Override
     protected void setNodeName(Node node, JcrNodeAdapter item) throws RepositoryException {
         try {
-			if (item.isNew() || BlogWorkspaceUtil.hasNameChanged(node, getDefinition().getPropertyName())) {
-			    final String newNodeName = BlogWorkspaceUtil.generateUniqueNodeName(node, getDefinition().getPropertyName());
-			    item.setNodeName(newNodeName);
-			    NodeUtil.renameNode(node, newNodeName);
-			}
-		} catch (PathNotFoundException e) {
-			log.error("Trying to fetch value of a non-existant propertyName", e);
-		}
+            if (item.isNew() || BlogWorkspaceUtil.hasNameChanged(node, getDefinition().getPropertyName())) {
+                final String newNodeName = BlogWorkspaceUtil.generateUniqueNodeName(node, getDefinition().getPropertyName());
+                item.setNodeName(newNodeName);
+                NodeUtil.renameNode(node, newNodeName);
+            }
+        } catch (PathNotFoundException e) {
+            LOGGER.error("Trying to fetch value of a non-existent propertyName", e);
+        }
     }
 }

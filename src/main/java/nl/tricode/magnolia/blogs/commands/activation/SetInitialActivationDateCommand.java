@@ -1,4 +1,4 @@
-/**
+/*
  *      Tricode Blog module
  *      Is a Blog module for Magnolia CMS.
  *      Copyright (C) 2015  Tricode Business Integrators B.V.
@@ -21,21 +21,20 @@ package nl.tricode.magnolia.blogs.commands.activation;
 import info.magnolia.commands.impl.BaseRepositoryCommand;
 import info.magnolia.context.Context;
 import nl.tricode.magnolia.blogs.BlogsNodeTypes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import java.util.Calendar;
 
 public class SetInitialActivationDateCommand extends BaseRepositoryCommand {
-	public static final Logger log = LoggerFactory.getLogger(BaseRepositoryCommand.class);
 
-	@Override
-	public boolean execute(Context context) throws Exception {
-		Node blogNode = getJCRNode(context);
-		if (!blogNode.hasProperty(BlogsNodeTypes.Blog.PROPERTY_INITIALACTIVATIONDATE)) {
-			blogNode.setProperty(BlogsNodeTypes.Blog.PROPERTY_INITIALACTIVATIONDATE, Calendar.getInstance());
-		}
-		return true;
-	}
+    @Override
+    public boolean execute(final Context context) throws Exception {
+        final Node blogNode = getJCRNode(context);
+
+        if (!blogNode.hasProperty(BlogsNodeTypes.Blog.PROPERTY_INITIALACTIVATIONDATE)) {
+            blogNode.setProperty(BlogsNodeTypes.Blog.PROPERTY_INITIALACTIVATIONDATE, Calendar.getInstance());
+        }
+
+        return true;
+    }
 }

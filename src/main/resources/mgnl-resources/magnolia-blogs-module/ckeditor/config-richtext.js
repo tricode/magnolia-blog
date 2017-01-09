@@ -20,7 +20,7 @@ CKEDITOR.editorConfig = function( config ) {
         fonts: null,
         fontSizes: null
 
-    }
+    };
 
     // MIRROR info.magnolia.ui.form.field.factory.RichTextFieldFactory
     removePlugins = [];

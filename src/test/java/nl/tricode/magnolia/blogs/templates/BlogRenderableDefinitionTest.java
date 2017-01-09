@@ -1,4 +1,4 @@
-/**
+/*
  *      Tricode Blog module
  *      Is a Blog module for Magnolia CMS.
  *      Copyright (C) 2015  Tricode Business Integrators B.V.
@@ -27,8 +27,7 @@ import info.magnolia.objectfactory.Components;
 import info.magnolia.rendering.model.RenderingModel;
 import info.magnolia.rendering.template.RenderableDefinition;
 import info.magnolia.templating.functions.TemplatingFunctions;
-
-import nl.tricode.magnolia.blogs.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.commons.iterator.NodeIteratorAdapter;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,7 +35,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 
 import javax.inject.Provider;
 import javax.jcr.Node;
@@ -45,15 +43,21 @@ import javax.jcr.Workspace;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 public class BlogRenderableDefinitionTest {
-    private BlogRenderableDefinition<RenderableDefinition> definition;
 
     private static final String WORKSPACE = "collaboration";
+
+    private BlogRenderableDefinition<RenderableDefinition> definition;
 
     @Mock
     private Node mockNode;
@@ -82,8 +86,7 @@ public class BlogRenderableDefinitionTest {
         Components.setComponentProvider(mockComponentProvider);
         doReturn(i18nContentSupport).when(mockComponentProvider).getComponent(I18nContentSupport.class);
 
-
-	     spyTemplatingFunctions = Mockito.spy(new TemplatingFunctions(mock(Provider.class)));
+        spyTemplatingFunctions = Mockito.spy(new TemplatingFunctions(mock(Provider.class)));
     }
 
     @Test
@@ -129,7 +132,7 @@ public class BlogRenderableDefinitionTest {
         Assert.assertEquals(5, blogs.size());
     }
 
-	 @Test
+    @Test
     public void testGetBlogsWithTooHighPageNumber() throws Exception {
         parameters.put("page", "2");
         createInstance();
@@ -270,22 +273,6 @@ public class BlogRenderableDefinitionTest {
         Assert.assertEquals("December", december);
     }
 
-    private static List<Node> createMockNodes(String nodeType, int count) throws Exception {
-        final List<Node> mockList = new ArrayList<Node>(count);
-        for (int i = 0; i < count; i++) {
-            mockList.add(createMockNode(nodeType));
-        }
-        return mockList;
-    }
-
-    private static Node createMockNode(String nodeType) throws Exception {
-        Node mockNode = mock(Node.class);
-        doReturn(true).when(mockNode).isNodeType(nodeType);
-        doReturn(1).when(mockNode).getDepth();
-        doReturn("/" + UUID.randomUUID().toString()).when(mockNode).getPath();
-        return mockNode;
-    }
-
     private void executeMockQuery(String workspace, String expectedQuery, List<Node> results) throws Exception {
         Session mockSession = mock(Session.class);
         Workspace mockWorkspace = mock(Workspace.class);
@@ -304,5 +291,21 @@ public class BlogRenderableDefinitionTest {
 
     private void createInstance() {
         definition = new BlogRenderableDefinition<>(mockNode, mockDefinition, mockParent, spyTemplatingFunctions);
+    }
+
+    private static List<Node> createMockNodes(String nodeType, int count) throws Exception {
+        final List<Node> mockList = new ArrayList<Node>(count);
+        for (int i = 0; i < count; i++) {
+            mockList.add(createMockNode(nodeType));
+        }
+        return mockList;
+    }
+
+    private static Node createMockNode(String nodeType) throws Exception {
+        Node mockNode = mock(Node.class);
+        doReturn(true).when(mockNode).isNodeType(nodeType);
+        doReturn(1).when(mockNode).getDepth();
+        doReturn("/" + UUID.randomUUID().toString()).when(mockNode).getPath();
+        return mockNode;
     }
 }

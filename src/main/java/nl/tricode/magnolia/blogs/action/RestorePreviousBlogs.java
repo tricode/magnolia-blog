@@ -1,4 +1,4 @@
-/**
+/*
  *      Tricode Blog module
  *      Is a Blog module for Magnolia CMS.
  *      Copyright (C) 2015  Tricode Business Integrators B.V.
@@ -35,15 +35,13 @@ import javax.inject.Named;
 import javax.jcr.Node;
 import java.util.List;
 
-/**
- * Created by mvdmark on 25-11-2014.
- */
 public class RestorePreviousBlogs extends RestoreItemPreviousVersionAction {
+
     private final LocationController locationController;
 
     public RestorePreviousBlogs(RestoreItemPreviousVersionActionDefinition definition, JcrItemAdapter item,
-                               CommandsManager commandsManager, @Named("admincentral") EventBus eventBus, UiContext uiContext,
-                               SimpleTranslator i18n, LocationController locationController) {
+                                CommandsManager commandsManager, @Named("admincentral") EventBus eventBus, UiContext uiContext,
+                                SimpleTranslator i18n, LocationController locationController) {
 
         super(definition, item, commandsManager, eventBus, uiContext, i18n);
 
@@ -51,8 +49,8 @@ public class RestorePreviousBlogs extends RestoreItemPreviousVersionAction {
     }
 
     public RestorePreviousBlogs(RestoreItemPreviousVersionActionDefinition definition, List<JcrItemAdapter> items,
-                               CommandsManager commandsManager, @Named("admincentral") EventBus eventBus, UiContext uiContext,
-                               SimpleTranslator i18n, LocationController locationController) {
+                                CommandsManager commandsManager, @Named("admincentral") EventBus eventBus, UiContext uiContext,
+                                SimpleTranslator i18n, LocationController locationController) {
 
         super(definition, items, commandsManager, eventBus, uiContext, i18n);
 
@@ -68,8 +66,13 @@ public class RestorePreviousBlogs extends RestoreItemPreviousVersionAction {
         boolean restoreMultiple = getItems().size() > 1 || NodeUtil.getNodes(node, BlogsNodeTypes.Blog.NAME).iterator().hasNext();
 
         if (!restoreMultiple) {
-            DetailLocation location = new DetailLocation("tricode-blogs", "detail", DetailView.ViewType.EDIT, node.getPath(), "");
-            locationController.goTo(location);
+            locationController.goTo(new DetailLocation(
+                    "tricode-blogs",
+                    "detail",
+                    DetailView.ViewType.EDIT,
+                    node.getPath(),
+                    "")
+            );
         }
     }
 }

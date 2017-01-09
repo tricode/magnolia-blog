@@ -1,4 +1,4 @@
-/**
+/*
  *      Tricode Blog module
  *      Is a Blog module for Magnolia CMS.
  *      Copyright (C) 2015  Tricode Business Integrators B.V.
@@ -25,9 +25,9 @@ import info.magnolia.jcr.util.PropertyUtil;
 import info.magnolia.ui.workbench.column.AbstractColumnFormatter;
 import info.magnolia.ui.workbench.column.definition.PropertyColumnDefinition;
 import nl.tricode.magnolia.blogs.BlogsNodeTypes;
-import nl.tricode.magnolia.blogs.util.BlogWorkspaceUtil;
-
-import nl.tricode.magnolia.blogs.util.StringUtils;
+import nl.tricode.magnolia.blogs.util.BlogRepositoryConstants;
+import nl.tricode.magnolia.blogs.util.BlogStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,14 +41,17 @@ import javax.jcr.RepositoryException;
  * @see info.magnolia.contacts.app.column.ContactNameColumnFormatter
  */
 public class AuthorNameColumnFormatter extends AbstractColumnFormatter<PropertyColumnDefinition> {
-    private static final Logger log = LoggerFactory.getLogger(AuthorNameColumnFormatter.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthorNameColumnFormatter.class);
 
     public AuthorNameColumnFormatter(PropertyColumnDefinition definition) {
         super(definition);
     }
 
-    public Object generateCell(Table source, Object itemId, Object columnId) {
+    @Override
+    public Object generateCell(final Table source, final Object itemId, final Object columnId) {
         final Item jcrItem = getJcrItem(source, itemId);
+
         if (jcrItem != null && jcrItem.isNode()) {
             final Node node = (Node) jcrItem;
 
@@ -56,21 +59,24 @@ public class AuthorNameColumnFormatter extends AbstractColumnFormatter<PropertyC
                 if (NodeUtil.isNodeType(node, BlogsNodeTypes.Blog.NAME)) {
                     // Get identifier from author
                     final String authorId = PropertyUtil.getString(node, BlogsNodeTypes.Blog.PROPERTY_AUTHOR, StringUtils.EMPTY);
+
                     // Find author in contacts and return first name and last name
                     if (StringUtils.isNotEmpty(authorId)) {
-                        final Node author = NodeUtil.getNodeByIdentifier(BlogWorkspaceUtil.CONTACTS, authorId);
+                        final Node author = NodeUtil.getNodeByIdentifier(BlogRepositoryConstants.CONTACTS, authorId);
 
                         final StringBuilder nameBuilder = new StringBuilder();
                         nameBuilder.append(PropertyUtil.getString(author, ContactsNodeTypes.Contact.PROPERTY_FIRST_NAME, StringUtils.EMPTY));
-                        nameBuilder.append(StringUtils.SPACE);
+                        nameBuilder.append(BlogStringUtils.SPACE);
                         nameBuilder.append(PropertyUtil.getString(author, ContactsNodeTypes.Contact.PROPERTY_LAST_NAME, StringUtils.EMPTY));
                         return nameBuilder.toString().trim();
                     }
                 }
             } catch (RepositoryException e) {
-                log.warn("Unable to get name of contact for column", e);
+                LOGGER.warn("Unable to get name of contact for column", e);
             }
         }
+
         return StringUtils.EMPTY;
     }
+
 }

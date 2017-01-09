@@ -1,4 +1,4 @@
-/**
+/*
  *      Tricode Blog module
  *      Is a Blog module for Magnolia CMS.
  *      Copyright (C) 2015  Tricode Business Integrators B.V.
@@ -19,10 +19,13 @@
 package nl.tricode.magnolia.blogs.util;
 
 /**
- * This class extends org.apache.commons.lang.StringUtils additional it has some extra constants.
+ * This class extends org.apache.commons.lang.BlogStringUtils additional it has some extra constants.
  */
-public class StringUtils extends org.apache.commons.lang.StringUtils {
-	public static final String DOT = "";
+public class BlogStringUtils {
+
 	public static final String SPACE = " ";
 	public static final String HYPHEN = "-";
+
+	private BlogStringUtils() {
+	}
 }

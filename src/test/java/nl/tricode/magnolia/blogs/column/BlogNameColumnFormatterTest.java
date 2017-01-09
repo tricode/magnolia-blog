@@ -1,4 +1,4 @@
-/**
+/*
  *      Tricode Blog module
  *      Is a Blog module for Magnolia CMS.
  *      Copyright (C) 2015  Tricode Business Integrators B.V.
@@ -26,7 +26,7 @@ import info.magnolia.ui.vaadin.integration.jcr.JcrItemAdapter;
 import info.magnolia.ui.workbench.column.definition.PropertyColumnDefinition;
 import nl.tricode.magnolia.blogs.BlogsNodeTypes;
 
-import nl.tricode.magnolia.blogs.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.junit.Assert;
 import org.junit.Before;

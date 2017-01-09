@@ -1,4 +1,4 @@
-/**
+/*
  *      Tricode Blog module
  *      Is a Blog module for Magnolia CMS.
  *      Copyright (C) 2015  Tricode Business Integrators B.V.
@@ -31,7 +31,7 @@ import info.magnolia.rendering.model.RenderingModelImpl;
 import info.magnolia.rendering.template.RenderableDefinition;
 import info.magnolia.templating.functions.TemplatingFunctions;
 import nl.tricode.magnolia.blogs.BlogsNodeTypes;
-import nl.tricode.magnolia.blogs.util.BlogWorkspaceUtil;
+import nl.tricode.magnolia.blogs.util.BlogRepositoryConstants;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,228 +47,225 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by mvdmark on 7-7-2014.
- */
 public class BlogSearchRenderableDefinition<RD extends RenderableDefinition> extends RenderingModelImpl<RD> {
-	private static final Logger log = LoggerFactory.getLogger(BlogSearchRenderableDefinition.class);
 
-	private static final String SEARCH_TERM = "s";
-	private static final String PAGENUMBER = "p";
-	private static final String SEARCH_PROXIMITY = "~0.6";
+    private static final Logger LOGGER = LoggerFactory.getLogger(BlogSearchRenderableDefinition.class);
 
-	protected Multimap<String, String> filter;
+    private static final String SEARCH_TERM = "s";
+    private static final String PAGENUMBER = "p";
+    private static final String SEARCH_PROXIMITY = "~0.6";
 
-	private String nodetype;
-	private String workspace;
-	private int count;
-	private int numPages;
+    private final TemplatingFunctions templatingFunctions;
+    private final WebContext webContext = MgnlContext.getWebContext();
 
-	private final TemplatingFunctions templatingFunctions;
-	private final WebContext webContext = MgnlContext.getWebContext();
+    private Multimap<String, String> filter;
 
-	private List<ContentMap> searchResults = new ArrayList<ContentMap>();
+    private String nodetype;
+    private String workspace;
+    private int count;
+    private int numPages;
+    private List<ContentMap> searchResults = new ArrayList<ContentMap>();
 
-	@Inject
-	public BlogSearchRenderableDefinition(Node content, RD definition, RenderingModel<?> parent, TemplatingFunctions templatingFunctions) {
-		super(content, definition, parent);
-		this.templatingFunctions = templatingFunctions;
+    @Inject
+    public BlogSearchRenderableDefinition(Node content, RD definition, RenderingModel<?> parent, TemplatingFunctions templatingFunctions) {
+        super(content, definition, parent);
+        this.templatingFunctions = templatingFunctions;
 
-		setWorkspace(BlogWorkspaceUtil.COLLABORATION);
-		setNodetype(BlogsNodeTypes.Blog.NAME);
+        setWorkspace(BlogRepositoryConstants.COLLABORATION);
+        setNodetype(BlogsNodeTypes.Blog.NAME);
 
-		filter = LinkedListMultimap.create();
-		Set<String> parameters = webContext.getParameters().keySet();
-		for (String parameterKey : parameters) {
-			if (allowedParameters().contains(parameterKey)) {
-				String[] parameterValues = webContext.getParameterValues(parameterKey);
-				for (String parameterValue : parameterValues) {
-					if (StringUtils.isNotEmpty(parameterValue)) {
-						filter.get(parameterKey).add(parameterValue);
-					}
-				}
-			}
-			webContext.remove(parameterKey);
-		}
-		log.debug("Running constructor BlogSearchRenderableDefinition");
-	}
+        filter = LinkedListMultimap.create();
+        Set<String> parameters = webContext.getParameters().keySet();
+        for (String parameterKey : parameters) {
+            if (allowedParameters().contains(parameterKey)) {
+                String[] parameterValues = webContext.getParameterValues(parameterKey);
+                for (String parameterValue : parameterValues) {
+                    if (StringUtils.isNotEmpty(parameterValue)) {
+                        filter.get(parameterKey).add(parameterValue);
+                    }
+                }
+            }
+            webContext.remove(parameterKey);
+        }
+        LOGGER.debug("Running constructor BlogSearchRenderableDefinition");
+    }
 
-	@Override
-	public String execute() {
-		String queryString = buildQuery(getSearchPath(), true);
-		log.debug(MessageFormat.format("BlogSearchRenderableDefinition Query executed: {0}", queryString));
+    @Override
+    public String execute() {
+        String queryString = buildQuery(getSearchPath(), true);
+        LOGGER.debug("BlogSearchRenderableDefinition Query executed: {}", queryString);
 
-		// Do not cache this response!
-		// More info: http://documentation.magnolia-cms.com/display/DOCS/Cache+module#Cachemodule-Cacheheadernegotiation
-		webContext.getResponse().setHeader("Cache-Control", "no-cache");
+        // Do not cache this response!
+        // More info: http://documentation.magnolia-cms.com/display/DOCS/Cache+module#Cachemodule-Cacheheadernegotiation
+        webContext.getResponse().setHeader("Cache-Control", "no-cache");
 
-		if (StringUtils.isBlank(queryString)) {
-			return null;
-		}
-		try {
-			executePagedNodesQuery(queryString, getMaxResultsPerPage(), getPageNumber(), getWorkspace(), getNodetype());
-		} catch (Exception e) {
-			log.error(MessageFormat.format("{0} caught while parsing query for search term [{1}] : {2}", e.getClass().getName(), queryString, e.getMessage()), e);
-		}
-		return StringUtils.EMPTY;
-	}
+        if (StringUtils.isBlank(queryString)) {
+            return null;
+        }
+        try {
+            executePagedNodesQuery(queryString, getMaxResultsPerPage(), getPageNumber(), getWorkspace(), getNodetype());
+        } catch (Exception e) {
+            LOGGER.error("{} caught while parsing query for search term [{}] : {}", e.getClass().getName(), queryString, e.getMessage());
+        }
+        return StringUtils.EMPTY;
+    }
 
-	protected String buildQuery(String path, Boolean useFilters) {
-		log.debug("buildQuery path[" + path + "], useFilters [" + useFilters + "].");
+    public String getPredicate() {
+        String searchTermPredicate = StringUtils.EMPTY;
+        if (filter.containsKey(SEARCH_TERM)) {
+            String searchString = filter.get(SEARCH_TERM).iterator().next().replaceAll("'", "''");
+            searchString = searchString + SEARCH_PROXIMITY;
+            searchTermPredicate = MessageFormat.format("AND contains(p.*, ''{0}'') ", searchString);
+        }
+        return searchTermPredicate;
+    }
 
-		String filters = StringUtils.EMPTY;
-		if (useFilters) {
-			filters = getPredicate();
-		}
-		String query =  "SELECT p.* FROM [nt:base] AS p " +
-				  "WHERE ISDESCENDANTNODE(p, '"+ StringUtils.defaultIfEmpty(path, "/") + "') " +
-				  filters +
-				  "ORDER BY "+getOrderString();
+    /**
+     * Get request parameter for current page.
+     *
+     * @return pagenumber
+     */
+    public int getPageNumber() {
+        int pageNumber = 1;
+        if (filter.containsKey(PAGENUMBER)) {
+            pageNumber = Integer.parseInt(filter.get(PAGENUMBER).iterator().next());
+        }
+        return pageNumber;
+    }
 
-		return query;
-	}
+    public String getWorkspace() {
+        return workspace;
+    }
 
-	protected String getOrderString() {
-		return "score() desc";
-	}
+    public void setWorkspace(String workspace) {
+        this.workspace = workspace;
+    }
 
-	/**
-	 * Fetching paged node items.
-	 *
-	 * @param statement SQL2 statement
-	 * @param maxResultSize Max results returned
-	 * @param pageNumber paging number
-	 *
-	 * @throws javax.jcr.LoginException
-	 * @throws javax.jcr.RepositoryException
-	 */
-	protected void executePagedNodesQuery(String statement, int maxResultSize, int pageNumber, String workspace, String nodeType) throws LoginException, RepositoryException {
-		List<Node> nodeList = new ArrayList<Node>(0);
-		List<Node> nodeListPaged = new ArrayList<Node>(0);
-		NodeIterator items = QueryUtil.search(workspace, statement, Query.JCR_SQL2, nodeType);
-		while (items.hasNext()) {
-			nodeList.add(new I18nNodeWrapper(items.nextNode()));
-		}
-		int total = nodeList.size();
+    public String getNodetype() {
+        return nodetype;
+    }
 
-		// Paging result set
-		int startRow = (maxResultSize * (pageNumber - 1));
-		int newLimit = maxResultSize;
-		if(total > startRow) {
-			if(total < startRow + maxResultSize) {
-				newLimit = total - startRow;
-			}
-			nodeListPaged = nodeList.subList(startRow, startRow + newLimit);
-		}
+    public void setNodetype(String nodetype) {
+        this.nodetype = nodetype;
+    }
 
-		int calcNumPages = total/maxResultSize;
-		if((total % maxResultSize) > 0 ) {
-			calcNumPages++;
-		}
-		// Set template model properties
-		setCount(total);
-		setNumPages(calcNumPages);
-		setSearchResults(templatingFunctions.asContentMapList(nodeListPaged));
-	}
+    public List<ContentMap> getSearchResults() {
+        LOGGER.debug("get Search Results  size[{}]", searchResults.size());
+        return searchResults;
+    }
 
-	protected Set<String> allowedParameters() {
-		return Sets.newHashSet(SEARCH_TERM, "r", PAGENUMBER);
-	}
+    public void setSearchResults(List<ContentMap> searchResults) {
+        this.searchResults = searchResults;
+    }
 
-	public String getPredicate() {
-		String searchTermPredicate = StringUtils.EMPTY;
-		if (filter.containsKey(SEARCH_TERM)) {
-			String searchString = filter.get(SEARCH_TERM).iterator().next().replaceAll("'", "''");
-			searchString = searchString + SEARCH_PROXIMITY;
-			searchTermPredicate = MessageFormat.format("AND contains(p.*, ''{0}'') ", new Object[]{searchString});
-		}
-		return searchTermPredicate;
-	}
+    public int getCount() {
+        return count;
+    }
 
-	/**
-	 * Get searchPath content property. If not set then "/" (root) is used.
-	 * @return search path
-	 */
-	protected String getSearchPath() {
-		String searchPath = "/";
-		try {
-			if (content.hasProperty("searchPath")) {
-				searchPath = templatingFunctions.nodeById(content.getProperty("searchPath").getString()).getPath();
-			}
-		} catch (Exception e) {
-			log.info("no searchPath property set on content", e);
-		}
-		return searchPath;
-	}
+    public void setCount(int count) {
+        this.count = count;
+    }
 
-	/**
-	 * Get request parameter for current page.
-	 *
-	 * @return pagenumber
-	 */
-	public int getPageNumber() {
-		int pageNumber = 1;
-		if (filter.containsKey(PAGENUMBER)) {
-			pageNumber = Integer.parseInt(filter.get(PAGENUMBER).iterator().next());
-		}
-		return pageNumber;
-	}
+    public int getNumPages() {
+        return numPages;
+    }
 
-	/**
-	 * Get Max. results per page content property. If not set then Integer.MAX_VALUE is used.
-	 *
-	 * @return maximum results per page number
-	 */
-	protected int getMaxResultsPerPage() {
-		int maxResultsPerPage = Integer.MAX_VALUE;
-		try {
-			if (content.hasProperty("maxResultsPerPage")) {
-				maxResultsPerPage = Integer.parseInt(content.getProperty("maxResultsPerPage").getString());
-			}
-		} catch (Exception e) {
-			log.info("no maxResultsPerPage property set on content", e);
-		}
-		return maxResultsPerPage;
-	}
+    public void setNumPages(int numPages) {
+        this.numPages = numPages;
+    }
 
-	public String getWorkspace() {
-		return workspace;
-	}
+    protected String buildQuery(String path, boolean useFilters) {
+        LOGGER.debug("buildQuery path[{}], useFilters [{}].", path, useFilters);
 
-	public void setWorkspace(String workspace) {
-		this.workspace = workspace;
-	}
+        String filters = StringUtils.EMPTY;
 
-	public String getNodetype() {
-		return nodetype;
-	}
+        if (useFilters) {
+            filters = getPredicate();
+        }
 
-	public void setNodetype(String nodetype) {
-		this.nodetype = nodetype;
-	}
+        return "SELECT p.* FROM [nt:base] AS p " +
+                "WHERE ISDESCENDANTNODE(p, '" + StringUtils.defaultIfEmpty(path, "/") + "') " +
+                filters +
+                "ORDER BY " + getOrderString();
+    }
 
-	public List<ContentMap> getSearchResults() {
-		log.debug("get Search Results  size[" + searchResults.size() + "]");
-		return searchResults;
-	}
+    protected String getOrderString() {
+        return "score() desc";
+    }
 
-	public void setSearchResults(List<ContentMap> searchResults) {
-		this.searchResults = searchResults;
-	}
+    /**
+     * Fetching paged node items.
+     *
+     * @param statement     SQL2 statement
+     * @param maxResultSize Max results returned
+     * @param pageNumber    paging number
+     * @throws javax.jcr.LoginException
+     * @throws javax.jcr.RepositoryException
+     */
+    protected void executePagedNodesQuery(String statement, int maxResultSize, int pageNumber, String workspace, String nodeType) throws LoginException, RepositoryException {
+        List<Node> nodeList = new ArrayList<Node>(0);
+        List<Node> nodeListPaged = new ArrayList<Node>(0);
+        NodeIterator items = QueryUtil.search(workspace, statement, Query.JCR_SQL2, nodeType);
+        while (items.hasNext()) {
+            nodeList.add(new I18nNodeWrapper(items.nextNode()));
+        }
+        int total = nodeList.size();
 
-	public int getCount() {
-		return count;
-	}
+        // Paging result set
+        int startRow = (maxResultSize * (pageNumber - 1));
+        int newLimit = maxResultSize;
+        if (total > startRow) {
+            if (total < startRow + maxResultSize) {
+                newLimit = total - startRow;
+            }
+            nodeListPaged = nodeList.subList(startRow, startRow + newLimit);
+        }
 
-	public void setCount(int count) {
-		this.count = count;
-	}
+        int calcNumPages = total / maxResultSize;
+        if ((total % maxResultSize) > 0) {
+            calcNumPages++;
+        }
+        // Set template model properties
+        setCount(total);
+        setNumPages(calcNumPages);
+        setSearchResults(templatingFunctions.asContentMapList(nodeListPaged));
+    }
 
-	public int getNumPages() {
-		return numPages;
-	}
+    protected Set<String> allowedParameters() {
+        return Sets.newHashSet(SEARCH_TERM, "r", PAGENUMBER);
+    }
 
-	public void setNumPages(int numPages) {
-		this.numPages = numPages;
-	}
+    /**
+     * Get searchPath content property. If not set then "/" (root) is used.
+     *
+     * @return search path
+     */
+    protected String getSearchPath() {
+        String searchPath = "/";
+        try {
+            if (content.hasProperty("searchPath")) {
+                searchPath = templatingFunctions.nodeById(content.getProperty("searchPath").getString()).getPath();
+            }
+        } catch (Exception e) {
+            LOGGER.info("no searchPath property set on content", e);
+        }
+        return searchPath;
+    }
+
+    /**
+     * Get Max. results per page content property. If not set then Integer.MAX_VALUE is used.
+     *
+     * @return maximum results per page number
+     */
+    protected int getMaxResultsPerPage() {
+        int maxResultsPerPage = Integer.MAX_VALUE;
+        try {
+            if (content.hasProperty("maxResultsPerPage")) {
+                maxResultsPerPage = Integer.parseInt(content.getProperty("maxResultsPerPage").getString());
+            }
+        } catch (Exception e) {
+            LOGGER.info("no maxResultsPerPage property set on content", e);
+        }
+        return maxResultsPerPage;
+    }
 }

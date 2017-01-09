@@ -1,4 +1,4 @@
-/**
+/*
  *      Tricode Blog module
  *      Is a Blog module for Magnolia CMS.
  *      Copyright (C) 2015  Tricode Business Integrators B.V.
@@ -29,13 +29,15 @@ import javax.jcr.Item;
  * Column formatter that displays either the title of a blog or a folder.
  */
 public class BlogNameColumnFormatter extends AbstractColumnFormatter<PropertyColumnDefinition> {
+
     public BlogNameColumnFormatter(PropertyColumnDefinition definition) {
         super(definition);
     }
 
-    public Object generateCell(Table source, Object itemId, Object columnId) {
+    public Object generateCell(final Table source, final Object itemId, final Object columnId) {
         final Item jcrItem = getJcrItem(source, itemId);
 
-        return GenericColumnFormatter.generateCellHelper(jcrItem, BlogsNodeTypes.Blog.NAME, BlogsNodeTypes.Blog.PROPERTY_TITLE);
+        return BlogColumnFormatterUtil.generateCellHelper(jcrItem, BlogsNodeTypes.Blog.NAME, BlogsNodeTypes.Blog.PROPERTY_TITLE);
     }
+
 }

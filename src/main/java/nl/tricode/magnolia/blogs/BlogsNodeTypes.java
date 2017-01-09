@@ -1,4 +1,4 @@
-/**
+/*
  *      Tricode Blog module
  *      Is a Blog module for Magnolia CMS.
  *      Copyright (C) 2015  Tricode Business Integrators B.V.
@@ -24,7 +24,12 @@ import info.magnolia.jcr.util.NodeTypes;
  * Blog defined NodeTypes.
  */
 @SuppressWarnings("unused") //Node representation in java.
-public class BlogsNodeTypes {
+public final class BlogsNodeTypes {
+
+    private BlogsNodeTypes() {
+        // Prevent instantiating this class
+    }
+
     /**
      * Represents the nodeType mgnl:blog.
      */
@@ -43,6 +48,11 @@ public class BlogsNodeTypes {
         public static final String PROPERTY_CATEGORIES = "categories";
         public static final String PROPERTY_TAGS = "tags";
         public static final String PROPERTY_PERMLINK = "permaLink";
-		  public static final String PROPERTY_INITIALACTIVATIONDATE = "initialActivationDate";
+        public static final String PROPERTY_INITIALACTIVATIONDATE = "initialActivationDate";
+
+        private Blog() {
+            // Prevent instantiating this class
+        }
     }
+
 }

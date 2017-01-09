@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sv:node sv:name="activation" xmlns:sv="http://www.jcp.org/jcr/sv/1.0">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>mgnl:content</sv:value>
+    </sv:property>
+    <sv:node sv:name="deactivate">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>mgnl:contentNode</sv:value>
+        </sv:property>
+        <sv:property sv:name="class" sv:type="String">
+            <sv:value>info.magnolia.commands.DelegateCommand</sv:value>
+        </sv:property>
+        <sv:property sv:name="commandName" sv:type="String">
+            <sv:value>versioned-deactivate</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="activateBlogPost">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>mgnl:contentNode</sv:value>
+        </sv:property>
+        <sv:node sv:name="setInitialActivationDate">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>mgnl:contentNode</sv:value>
+            </sv:property>
+            <sv:property sv:name="class" sv:type="String">
+                <sv:value>nl.tricode.magnolia.blogs.commands.activation.SetInitialActivationDateCommand</sv:value>
+            </sv:property>
+        </sv:node>
+        <sv:node sv:name="activate">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>mgnl:contentNode</sv:value>
+            </sv:property>
+            <sv:property sv:name="class" sv:type="String">
+                <sv:value>info.magnolia.commands.DelegateCommand</sv:value>
+            </sv:property>
+            <sv:property sv:name="commandName" sv:type="String">
+                <sv:value>versioned-activate</sv:value>
+            </sv:property>
+        </sv:node>
+    </sv:node>
+</sv:node>
