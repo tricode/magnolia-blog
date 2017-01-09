@@ -33,3 +33,4 @@ Copyright (c) 2015 Tricode and contributors. Released under a [GNUv3 license](ht
 
 ##Release notes 1.1.5
 * Upgrade to Magnolia 5.5
+* Update to Java 8
