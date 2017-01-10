@@ -306,7 +306,6 @@ subApps:
                 configJsFile: /.resources/magnolia-blogs-module/ckeditor/config-richtext.js
                 class: info.magnolia.ui.form.field.definition.RichTextFieldDefinition
               - name: author
-                i18nBasename: mgnl-i18n.app-tricode-blogs-messages
                 buttonSelectOtherLabel: tricode-blogs.blog.author.select.label
                 buttonSelectNewLabel: tricode-blogs.blog.author.select.label
                 targetWorkspace: contacts

@@ -19,7 +19,7 @@
 package nl.tricode.magnolia.blogs.util;
 
 /**
- * This class extends org.apache.commons.lang.BlogStringUtils additional it has some extra constants.
+ * String utils.
  */
 public class BlogStringUtils {
 
