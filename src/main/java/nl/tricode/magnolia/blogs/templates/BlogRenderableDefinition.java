@@ -58,7 +58,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * Magnolia Renderable Definition for blog items.
+ * Magnolia {@link RenderableDefinition} for blog items.
  */
 public class BlogRenderableDefinition<RD extends RenderableDefinition> extends RenderingModelImpl {
 
@@ -67,12 +67,11 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
     private static final int DEFAULT_LATEST_COUNT = 5;
     private static final String DEFAULT_LANGUAGE = "en";
     private static final String PARAM_CATEGORY = "category";
-    private static final String PARAM_TAG = "tag";
     private static final String PARAM_AUTHOR = "author";
     private static final String PARAM_PAGE = "page";
     private static final String PARAM_YEAR = "year";
     private static final String PARAM_MONTH = "month";
-    private static final List<String> WHITELISTED_PARAMETERS = Arrays.asList(PARAM_CATEGORY, PARAM_TAG, PARAM_AUTHOR, PARAM_PAGE, PARAM_YEAR, PARAM_MONTH);
+    private static final List<String> WHITELISTED_PARAMETERS = Arrays.asList(PARAM_CATEGORY, PARAM_AUTHOR, PARAM_PAGE, PARAM_YEAR, PARAM_MONTH);
 
     private final WebContext webContext = MgnlContext.getWebContext();
     private final TemplatingFunctions templatingFunctions;
@@ -119,7 +118,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
         if (StringUtils.isNumeric(maxResultSize)) {
             resultSize = Integer.parseInt(maxResultSize);
         }
-        String customFilters = getAuthorPredicate() + getTagPredicate(filter) + getCategoryPredicate(filter) + getDateCreatedPredicate();
+        final String customFilters = constructAuthorPredicate() + constructCategoryPredicate(filter) + constructDateCreatedPredicate();
         final String sqlBlogItems = JcrUtils.buildQuery(path, BlogsNodeTypes.Blog.NAME, true, customFilters);
         return templatingFunctions.asContentMapList(JcrUtils.getWrappedNodesFromQuery(sqlBlogItems, resultSize, getPageNumber(), BlogsNodeTypes.Blog.NAME));
     }
@@ -135,15 +134,6 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
     @SuppressWarnings("unused") //Used in freemarker components.
     public List<ContentMap> getLatestBlogs(String path, String maxResultSize) throws RepositoryException {
         return getLatest(path, maxResultSize, BlogsNodeTypes.Blog.NAME, getPageNumber(), BlogsNodeTypes.Blog.NAME);
-    }
-
-    public List<ContentMap> getLatest(String path, String maxResultSize, String nodeType, int pageNumber, String nodeTypeName) throws RepositoryException {
-        int resultSize = DEFAULT_LATEST_COUNT;
-        if (StringUtils.isNumeric(maxResultSize)) {
-            resultSize = Integer.parseInt(maxResultSize);
-        }
-        final String sqlBlogItems = JcrUtils.buildQuery(path, nodeType);
-        return templatingFunctions.asContentMapList(JcrUtils.getWrappedNodesFromQuery(sqlBlogItems, resultSize, pageNumber, nodeTypeName));
     }
 
     /**
@@ -174,12 +164,20 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @param useFilters <code>true</code> to use filters
      * @return long Number of blog posts
      */
+    @SuppressWarnings("unused") //Used in freemarker components.
     public int getBlogCount(String path, boolean useFilters) throws RepositoryException {
-        String customFilters = getAuthorPredicate() + getTagPredicate(filter) + getCategoryPredicate(filter) + getDateCreatedPredicate();
+        final String customFilters = constructAuthorPredicate() + constructCategoryPredicate(filter) + constructDateCreatedPredicate();
         final String sqlBlogItems = JcrUtils.buildQuery(path, BlogsNodeTypes.Blog.NAME, useFilters, customFilters);
         return IteratorUtils.toList(QueryUtil.search(BlogRepositoryConstants.COLLABORATION, sqlBlogItems, Query.JCR_SQL2, BlogsNodeTypes.Blog.NAME)).size();
     }
 
+    /**
+     * @param filterProperty
+     * @param filterIdentifier
+     * @return
+     * @throws RepositoryException
+     */
+    @SuppressWarnings("unused") //Used in freemarker components.
     public int getRelatedBlogCount(String filterProperty, String filterIdentifier) throws RepositoryException {
         final String sqlBlogItems = JcrUtils.buildBlogCountQuery(filterProperty, filterIdentifier);
         return IteratorUtils.toList(QueryUtil.search(BlogRepositoryConstants.COLLABORATION, sqlBlogItems, Query.JCR_SQL2, BlogsNodeTypes.Blog.NAME)).size();
@@ -192,22 +190,12 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @param maxResultSize Maximum result size.
      * @return Boolean true when older blog posts exists
      */
+    @SuppressWarnings("unused") //Used in freemarker components.
     public boolean hasOlderPosts(String path, int maxResultSize) throws RepositoryException {
         final long totalBlogs = getBlogCount(path, true);
         final int pageNumber = getPageNumber();
 
         return hasOlderPosts(maxResultSize, totalBlogs, pageNumber);
-    }
-
-    /**
-     * Determine if older blog posts exists
-     *
-     * @param maxResultSize Maximum result size.
-     * @return Boolean true when older blog posts exists
-     */
-    public boolean hasOlderPosts(int maxResultSize, long totalBlogs, int pageNumber) throws RepositoryException {
-        final int maxPage = (int) Math.ceil((double) totalBlogs / (double) maxResultSize);
-        return maxPage >= pageNumber + 1;
     }
 
     /**
@@ -231,6 +219,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      *
      * @return Boolean true when newer blog posts exists
      */
+    @SuppressWarnings("unused") //Used in freemarker components.
     public Boolean hasNewerPosts() {
         return getPageNumber() > 1;
     }
@@ -250,41 +239,14 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
     }
 
     /**
-     * Get tags for given blog node
-     *
-     * @param blog ContentMap of blogs.
-     * @return List of tag nodes
-     */
-    @SuppressWarnings("unused") //Used in freemarker components.
-    public List<ContentMap> getBlogTags(ContentMap blog) {
-        return getItems(blog.getJCRNode(), BlogsNodeTypes.Blog.PROPERTY_TAGS, BlogRepositoryConstants.COLLABORATION);
-    }
-
-    /**
-     * Get tag cloud items having a score based on total blogs and referenced tags.
-     *
-     * @return Collection of tags with relative score
-     */
-    @SuppressWarnings("unused") //Used in freemarker components.
-    public List<CloudMap> getTagCloud() {
-        try {
-            final Iterable<Node> nodes = NodeUtil.asIterable(QueryUtil.search(BlogRepositoryConstants.COLLABORATION, "SELECT p.* from [mgnl:tag] AS p WHERE ISDESCENDANTNODE(p,'/')"));
-            return getCloudData(nodes, BlogsNodeTypes.Blog.PROPERTY_TAGS, false);
-        } catch (RepositoryException e) {
-            LOGGER.error("Exception while getting tag cloud", e);
-            return Collections.emptyList();
-        }
-    }
-
-    /**
      * Get categories for given blog node
      *
      * @param blog ContentMap of blogs.
      * @return List of category nodes
      */
     @SuppressWarnings("unused") //Used in freemarker components.
-    public List<ContentMap> getBlogCategories(ContentMap blog) {
-        return getItems(blog.getJCRNode(), BlogsNodeTypes.Blog.PROPERTY_CATEGORIES, BlogRepositoryConstants.COLLABORATION);
+    public List<ContentMap> getBlogCategories(final ContentMap blog) {
+        return getItems(blog.getJCRNode(), BlogsNodeTypes.Blog.PROPERTY_CATEGORIES, BlogRepositoryConstants.CATEGORY);
     }
 
     /**
@@ -322,7 +284,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
     /**
      * Get distinct year and month list for all available blogs
      *
-     * @return List<Map<String, Object>> containing properties <i>year</i> and <i>month</i>
+     * @return A list containing properties <i>year</i> and <i>month</i>
      */
     @SuppressWarnings("unused") //Used in freemarker components.
     public List<Map<String, Object>> getArchivedDates() {
@@ -348,8 +310,9 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
     /**
      * Get all available blogs starting from root node
      *
-     * @return List<Node> blogs
+     * @return All blogs
      */
+    @SuppressWarnings("unused") //Used in freemarker components.
     public List<Node> getAllBlogs() {
         final String sqlBlogItems = JcrUtils.buildQuery("/", BlogsNodeTypes.Blog.NAME);
         try {
@@ -361,7 +324,82 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
         }
     }
 
-    public List<ContentMap> getItems(Node item, String nodeType, String workspace) {
+    protected String constructAuthorPredicate() {
+        // todo ENHANCEMENT: this method should be private, but us still accessed directly by a test
+
+        if (!filter.containsKey(PARAM_AUTHOR)) {
+            return StringUtils.EMPTY;
+        }
+
+        final ContentMap contentMap = templatingFunctions.contentByPath(filter.get(PARAM_AUTHOR), BlogRepositoryConstants.CONTACTS);
+
+        if (contentMap == null) {
+            LOGGER.debug("Author '{}' does not exist", filter.get(PARAM_AUTHOR));
+            return StringUtils.EMPTY;
+        }
+
+        final String authorId = (String) contentMap.get("@id");
+
+        if (StringUtils.isNotEmpty(authorId)) {
+            return "AND p.author = '" + authorId + "' ";
+        }
+
+        return StringUtils.EMPTY;
+    }
+
+    protected String constructDateCreatedPredicate() {
+        // todo ENHANCEMENT: this method should be private, but us still accessed directly by a test
+
+        if (!filter.containsKey(PARAM_YEAR)) {
+            return StringUtils.EMPTY;
+        }
+
+        final int year = Integer.parseInt(filter.get(PARAM_YEAR));
+
+        final Calendar start = Calendar.getInstance();
+        start.set(year, Calendar.JANUARY, 1, 0, 0, 0);
+        start.set(Calendar.MILLISECOND, 0);
+
+        final Calendar end = Calendar.getInstance();
+        end.set(year, Calendar.DECEMBER, 1, 23, 59, 59);
+        end.set(Calendar.MILLISECOND, 999);
+
+        if (filter.containsKey(PARAM_MONTH)) {
+            final int month = Integer.parseInt(filter.get(PARAM_MONTH)) - 1;
+            start.set(Calendar.MONTH, month);
+            end.set(Calendar.MONTH, month);
+        }
+
+        // Determine last day of the end month
+        end.set(Calendar.DAY_OF_MONTH, end.getActualMaximum(Calendar.DAY_OF_MONTH));
+
+        final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        // Format start date and end data for use in jcr sql predicate
+        return "AND p.[mgnl:created] >= CAST('" + dateFormat.format(start.getTime()) + "' AS DATE) " +
+                "AND p.[mgnl:created] <= CAST('" + dateFormat.format(end.getTime()) + "' AS DATE) ";
+    }
+
+    /**
+     * Determine if older blog posts exists
+     *
+     * @param maxResultSize Maximum result size.
+     * @return Boolean true when older blog posts exists
+     */
+    private boolean hasOlderPosts(int maxResultSize, long totalBlogs, int pageNumber) throws RepositoryException {
+        final int maxPage = (int) Math.ceil((double) totalBlogs / (double) maxResultSize);
+        return maxPage >= pageNumber + 1;
+    }
+
+    private List<ContentMap> getLatest(String path, String maxResultSize, String nodeType, int pageNumber, String nodeTypeName) throws RepositoryException {
+        int resultSize = DEFAULT_LATEST_COUNT;
+        if (StringUtils.isNumeric(maxResultSize)) {
+            resultSize = Integer.parseInt(maxResultSize);
+        }
+        final String sqlBlogItems = JcrUtils.buildQuery(path, nodeType);
+        return templatingFunctions.asContentMapList(JcrUtils.getWrappedNodesFromQuery(sqlBlogItems, resultSize, pageNumber, nodeTypeName));
+    }
+
+    private List<ContentMap> getItems(Node item, String nodeType, String workspace) {
         final List<ContentMap> items = new ArrayList<>(0);
 
         try {
@@ -377,77 +415,24 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
         return items;
     }
 
-    protected String getAuthorPredicate() {
-        if (filter.containsKey(PARAM_AUTHOR)) {
-            final ContentMap contentMap = templatingFunctions.contentByPath(filter.get(PARAM_AUTHOR), BlogRepositoryConstants.CONTACTS);
-            if (contentMap != null) {
-                final String authorId = (String) contentMap.get("@id");
-                if (StringUtils.isNotEmpty(authorId)) {
-                    return "AND p.author = '" + authorId + "' ";
-                }
-            } else {
-                LOGGER.debug("Author [{}] not found", filter.get(PARAM_AUTHOR));
-            }
+    private String constructCategoryPredicate(final Map<String, String> filter) {
+        if (!filter.containsKey(PARAM_CATEGORY)) {
+            return StringUtils.EMPTY;
         }
-        return StringUtils.EMPTY;
-    }
 
-    protected String getDateCreatedPredicate() {
-        if (filter.containsKey(PARAM_YEAR)) {
-            final int year = Integer.parseInt(filter.get(PARAM_YEAR));
+        final ContentMap contentMap = templatingFunctions.contentByPath(filter.get(PARAM_CATEGORY), BlogRepositoryConstants.CATEGORY);
 
-            final Calendar start = Calendar.getInstance();
-            start.set(year, Calendar.JANUARY, 1, 0, 0, 0);
-            start.set(Calendar.MILLISECOND, 0);
-
-            final Calendar end = Calendar.getInstance();
-            end.set(year, Calendar.DECEMBER, 1, 23, 59, 59);
-            end.set(Calendar.MILLISECOND, 999);
-
-            if (filter.containsKey(PARAM_MONTH)) {
-                final int month = Integer.parseInt(filter.get(PARAM_MONTH)) - 1;
-                start.set(Calendar.MONTH, month);
-                end.set(Calendar.MONTH, month);
-            }
-
-            // Determine last day of the end month
-            end.set(Calendar.DAY_OF_MONTH, end.getActualMaximum(Calendar.DAY_OF_MONTH));
-
-            final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            // Format start date and end data for use in jcr sql predicate
-            return "AND p.[mgnl:created] >= CAST('" + dateFormat.format(start.getTime()) + "' AS DATE) " +
-                    "AND p.[mgnl:created] <= CAST('" + dateFormat.format(end.getTime()) + "' AS DATE) ";
+        if (contentMap == null) {
+            LOGGER.debug("Category '{}' does not exist", filter.get(PARAM_CATEGORY));
+            return StringUtils.EMPTY;
         }
-        return StringUtils.EMPTY;
-    }
 
-    protected String getTagPredicate(Map<String, String> filter) {
-        if (filter.containsKey(PARAM_TAG)) {
-            final ContentMap contentMap = templatingFunctions.contentByPath(filter.get(PARAM_TAG), BlogRepositoryConstants.COLLABORATION);
-            if (contentMap != null) {
-                final String tagId = (String) contentMap.get("@id");
-                if (StringUtils.isNotEmpty(tagId)) {
-                    return "AND p.tags like '%" + tagId + "%' ";
-                }
-            } else {
-                LOGGER.debug("Tag [{}] not found", filter.get(PARAM_TAG));
-            }
-        }
-        return StringUtils.EMPTY;
-    }
+        final String categoryId = (String) contentMap.get("@id");
 
-    protected String getCategoryPredicate(Map<String, String> filter) {
-        if (filter.containsKey(PARAM_CATEGORY)) {
-            final ContentMap contentMap = templatingFunctions.contentByPath(filter.get(PARAM_CATEGORY), BlogRepositoryConstants.CATEGORIES);
-            if (contentMap != null) {
-                final String categoryId = (String) contentMap.get("@id");
-                if (StringUtils.isNotEmpty(categoryId)) {
-                    return "AND p.categories like '%" + categoryId + "%' ";
-                }
-            } else {
-                LOGGER.debug("Category [{}] not found", filter.get(PARAM_CATEGORY));
-            }
+        if (StringUtils.isNotEmpty(categoryId)) {
+            return "AND p.categories like '%" + categoryId + "%' ";
         }
+
         return StringUtils.EMPTY;
     }
 

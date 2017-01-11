@@ -9,6 +9,6 @@ public interface BlogRepositoryConstants extends RepositoryConstants {
 
     String COLLABORATION = "collaboration";
     String CONTACTS = "contacts";
-    String CATEGORIES = "categories";
+    String CATEGORY = "category";
 
 }

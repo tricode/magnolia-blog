@@ -35,14 +35,8 @@
             <version>1.0/*</version>
         </dependency>
         <dependency>
-            <name>tricode-categories</name>
-            <version>1.0/*</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <name>tricode-tags</name>
-            <version>1.0/*</version>
-            <optional>true</optional>
+            <name>categorization-support</name>
+            <version>2.5/*</version>
         </dependency>
     </dependencies>
 

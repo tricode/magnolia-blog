@@ -46,7 +46,6 @@ public final class BlogsNodeTypes {
         public static final String PROPERTY_AUTHOR = "author";
         public static final String PROPERTY_COMMENTS_ENABLED = "comments";
         public static final String PROPERTY_CATEGORIES = "categories";
-        public static final String PROPERTY_TAGS = "tags";
         public static final String PROPERTY_PERMLINK = "permaLink";
         public static final String PROPERTY_INITIALACTIVATIONDATE = "initialActivationDate";
 

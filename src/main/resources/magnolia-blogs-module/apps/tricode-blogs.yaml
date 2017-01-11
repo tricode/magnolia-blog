@@ -36,7 +36,6 @@ subApps:
       editFolder:
         dialogName: magnolia-blogs-module:folder
         icon: icon-edit
-#        nodeType: mgnl:blogsFolder
         class: info.magnolia.ui.framework.action.OpenEditDialogActionDefinition
       deleteFolder:
         icon: icon-delete
@@ -111,7 +110,6 @@ subApps:
       editActivationDate:
         dialogName: magnolia-blogs-module:updateActivationDate
         icon: icon-edit
-#        nodeType: mgnl:blog
         class: info.magnolia.ui.framework.action.OpenEditDialogActionDefinition
         availability:
           access:
@@ -293,7 +291,7 @@ subApps:
         - name: cancel
       form:
         tabs:
-          - name: blog
+          - name: tabBlog
             fields:
               - name: title
                 required: true
@@ -303,11 +301,11 @@ subApps:
                 required: true
                 class: info.magnolia.ui.form.field.definition.TextFieldDefinition
               - name: message
-                configJsFile: /.resources/magnolia-blogs-module/ckeditor/config-richtext.js
+                configJsFile: /.resources/magnolia-blogs-module/webresources/js/ckeditor/config-richtext.js
                 class: info.magnolia.ui.form.field.definition.RichTextFieldDefinition
               - name: author
-                buttonSelectOtherLabel: tricode-blogs.blog.author.select.label
-                buttonSelectNewLabel: tricode-blogs.blog.author.select.label
+                buttonSelectNewLabel: tricode-blogs.tabBlog.author.select.label
+                buttonSelectOtherLabel: tricode-blogs.tabBlog.author.select.label
                 targetWorkspace: contacts
                 appName: contacts
                 class: info.magnolia.ui.form.field.definition.LinkFieldDefinition
@@ -320,6 +318,21 @@ subApps:
               - name: comments
                 defaultValue: true
                 class: info.magnolia.ui.form.field.definition.CheckboxFieldDefinition
+          - name: tabCategories
+            fields:
+              - name: categories
+                label: tricode-blogs.tabCategories.categories.label
+                class: info.magnolia.ui.form.field.definition.MultiValueFieldDefinition
+                buttonSelectAddLabel: tricode-blogs.tabCategories.categories.add.label
+                field:
+                  name: linkField
+                  class: info.magnolia.ui.form.field.definition.LinkFieldDefinition
+                  targetWorkspace: category
+                  appName: categories
+                  fieldEditable: false
+                  buttonSelectNewLabel: tricode-blogs.tabCategories.categories.linkField.select.label
+                  identifierToPathConverter:
+                    class: info.magnolia.ui.form.field.converter.BaseIdentifierToPathConverter
     actions:
       commit:
         propertyName: title

@@ -1,0 +1,6 @@
+title: Blog items
+description: Shows a list of blog items
+renderType: freemarker
+templateScript: /magnolia-blogs-module/templates/components/blogItems.ftl
+dialog: magnolia-blogs-module:components/blogItems
+modelClass: nl.tricode.magnolia.blogs.templates.BlogRenderableDefinition

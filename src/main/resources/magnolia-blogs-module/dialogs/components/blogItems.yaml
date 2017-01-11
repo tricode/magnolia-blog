@@ -1,0 +1,14 @@
+form:
+  tabs:
+    - name: tabMain
+      fields:
+        - name: detailsPage
+          class: info.magnolia.ui.form.field.definition.LinkFieldDefinition
+          appName: pages
+          targetWorkspace: website
+          fieldEditable: false
+actions:
+  commit:
+    class: info.magnolia.ui.admincentral.dialog.action.SaveDialogActionDefinition
+  cancel:
+    class: info.magnolia.ui.admincentral.dialog.action.CancelDialogActionDefinition

@@ -151,7 +151,7 @@ public class BlogRenderableDefinitionTest {
     public void testAuthorPredicateWithoutParameters() {
         createInstance();
 
-        String predicate = definition.getAuthorPredicate();
+        String predicate = definition.constructAuthorPredicate();
         Assert.assertEquals(StringUtils.EMPTY, predicate);
     }
 
@@ -161,7 +161,7 @@ public class BlogRenderableDefinitionTest {
         parameters.put("author", id);
         createInstance();
 
-        String predicate = definition.getAuthorPredicate();
+        String predicate = definition.constructAuthorPredicate();
         Assert.assertEquals(StringUtils.EMPTY, predicate);
     }
 
@@ -176,7 +176,7 @@ public class BlogRenderableDefinitionTest {
         doReturn(contentMap).when(spyTemplatingFunctions).contentByPath(id, "contacts");
         doReturn(id).when(contentMap).get("@id");
 
-        String predicate = definition.getAuthorPredicate();
+        String predicate = definition.constructAuthorPredicate();
         Assert.assertEquals("AND p.author = 'louisvutton' ", predicate);
     }
 
@@ -184,7 +184,7 @@ public class BlogRenderableDefinitionTest {
     public void testDateCreatedPredicateWithoutParameters() {
         createInstance();
 
-        String predicate = definition.getDateCreatedPredicate();
+        String predicate = definition.constructDateCreatedPredicate();
         Assert.assertEquals(StringUtils.EMPTY, predicate);
     }
 
@@ -193,7 +193,7 @@ public class BlogRenderableDefinitionTest {
         parameters.put("year", "2011");
         createInstance();
 
-        String predicate = definition.getDateCreatedPredicate();
+        String predicate = definition.constructDateCreatedPredicate();
         Assert.assertEquals("AND p.[mgnl:created] >= CAST('2011-01-01T00:00:00.000Z' AS DATE) " +
                 "AND p.[mgnl:created] <= CAST('2011-12-31T23:59:59.999Z' AS DATE) ", predicate);
     }
@@ -204,7 +204,7 @@ public class BlogRenderableDefinitionTest {
         parameters.put("month", "");
         createInstance();
 
-        String predicate = definition.getDateCreatedPredicate();
+        String predicate = definition.constructDateCreatedPredicate();
         Assert.assertEquals("AND p.[mgnl:created] >= CAST('2011-01-01T00:00:00.000Z' AS DATE) " +
                 "AND p.[mgnl:created] <= CAST('2011-12-31T23:59:59.999Z' AS DATE) ", predicate);
     }
@@ -215,7 +215,7 @@ public class BlogRenderableDefinitionTest {
         parameters.put("month", "0");
         createInstance();
 
-        String predicate = definition.getDateCreatedPredicate();
+        String predicate = definition.constructDateCreatedPredicate();
         Assert.assertEquals("AND p.[mgnl:created] >= CAST('2010-12-01T00:00:00.000Z' AS DATE) " +
                 "AND p.[mgnl:created] <= CAST('2010-12-31T23:59:59.999Z' AS DATE) ", predicate);
     }
@@ -226,7 +226,7 @@ public class BlogRenderableDefinitionTest {
         parameters.put("month", "1");
         createInstance();
 
-        String predicate = definition.getDateCreatedPredicate();
+        String predicate = definition.constructDateCreatedPredicate();
         Assert.assertEquals("AND p.[mgnl:created] >= CAST('2011-01-01T00:00:00.000Z' AS DATE) " +
                 "AND p.[mgnl:created] <= CAST('2011-01-31T23:59:59.999Z' AS DATE) ", predicate);
     }
@@ -237,7 +237,7 @@ public class BlogRenderableDefinitionTest {
         parameters.put("month", "2");
         createInstance();
 
-        String predicate = definition.getDateCreatedPredicate();
+        String predicate = definition.constructDateCreatedPredicate();
         Assert.assertEquals("AND p.[mgnl:created] >= CAST('2011-02-01T00:00:00.000Z' AS DATE) " +
                 "AND p.[mgnl:created] <= CAST('2011-02-28T23:59:59.999Z' AS DATE) ", predicate);
     }
@@ -248,7 +248,7 @@ public class BlogRenderableDefinitionTest {
         parameters.put("month", "12");
         createInstance();
 
-        String predicate = definition.getDateCreatedPredicate();
+        String predicate = definition.constructDateCreatedPredicate();
         Assert.assertEquals("AND p.[mgnl:created] >= CAST('2011-12-01T00:00:00.000Z' AS DATE) " +
                 "AND p.[mgnl:created] <= CAST('2011-12-31T23:59:59.999Z' AS DATE) ", predicate);
     }
@@ -259,7 +259,7 @@ public class BlogRenderableDefinitionTest {
         parameters.put("month", "13");
         createInstance();
 
-        String predicate = definition.getDateCreatedPredicate();
+        String predicate = definition.constructDateCreatedPredicate();
         Assert.assertEquals("AND p.[mgnl:created] >= CAST('2012-01-01T00:00:00.000Z' AS DATE) " +
                 "AND p.[mgnl:created] <= CAST('2012-01-31T23:59:59.999Z' AS DATE) ", predicate);
     }

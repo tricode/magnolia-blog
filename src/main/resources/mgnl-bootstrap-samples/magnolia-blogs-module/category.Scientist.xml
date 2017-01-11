@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sv:node sv:name="Scientist" xmlns:sv="http://www.jcp.org/jcr/sv/1.0">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>mgnl:category</sv:value>
+    </sv:property>
+    <sv:property sv:name="jcr:uuid" sv:type="String">
+        <sv:value>7e0036ce-b5cb-44bc-bd53-ec5b017c2ae8</sv:value>
+    </sv:property>
+    <sv:property sv:name="level" sv:type="String">
+        <sv:value>level-1</sv:value>
+    </sv:property>
+    <sv:property sv:name="name" sv:type="String">
+        <sv:value>Scientist</sv:value>
+    </sv:property>
+    <sv:node sv:name="Physicist">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>mgnl:category</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>d8309875-4255-4306-9e4b-5cab76efc7d2</sv:value>
+        </sv:property>
+        <sv:property sv:name="level" sv:type="String">
+            <sv:value>level-1</sv:value>
+        </sv:property>
+        <sv:property sv:name="name" sv:type="String">
+            <sv:value>Physicist</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="Mathematician">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>mgnl:category</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>4d2c05a4-7b84-4c6f-a5e7-eba3c9fd16fa</sv:value>
+        </sv:property>
+        <sv:property sv:name="level" sv:type="String">
+            <sv:value>level-1</sv:value>
+        </sv:property>
+        <sv:property sv:name="name" sv:type="String">
+            <sv:value>Mathematician</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="Inventor">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>mgnl:category</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>28b72c5b-ecb7-4f54-988b-4df22c36450c</sv:value>
+        </sv:property>
+        <sv:property sv:name="level" sv:type="String">
+            <sv:value>level-1</sv:value>
+        </sv:property>
+        <sv:property sv:name="name" sv:type="String">
+            <sv:value>Inventor</sv:value>
+        </sv:property>
+    </sv:node>
+</sv:node>

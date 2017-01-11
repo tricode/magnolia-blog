@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sv:node sv:name="Biography" xmlns:sv="http://www.jcp.org/jcr/sv/1.0">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>mgnl:category</sv:value>
+    </sv:property>
+    <sv:property sv:name="jcr:uuid" sv:type="String">
+        <sv:value>c8d7a771-dccb-4a0f-b38b-ea617435b645</sv:value>
+    </sv:property>
+    <sv:property sv:name="level" sv:type="String">
+        <sv:value>level-1</sv:value>
+    </sv:property>
+    <sv:property sv:name="name" sv:type="String">
+        <sv:value>Biography</sv:value>
+    </sv:property>
+</sv:node>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sv:node sv:name="Writer" xmlns:sv="http://www.jcp.org/jcr/sv/1.0">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>mgnl:category</sv:value>
+    </sv:property>
+    <sv:property sv:name="jcr:uuid" sv:type="String">
+        <sv:value>a86bd574-d5a4-4e5e-8699-6f3b9eab534a</sv:value>
+    </sv:property>
+    <sv:property sv:name="level" sv:type="String">
+        <sv:value>level-1</sv:value>
+    </sv:property>
+    <sv:property sv:name="name" sv:type="String">
+        <sv:value>Writer</sv:value>
+    </sv:property>
+    <sv:node sv:name="Songwriter">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>mgnl:category</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>10b7ce8f-7d38-478c-98a0-134db58d6750</sv:value>
+        </sv:property>
+        <sv:property sv:name="level" sv:type="String">
+            <sv:value>level-1</sv:value>
+        </sv:property>
+        <sv:property sv:name="name" sv:type="String">
+            <sv:value>Songwriter</sv:value>
+        </sv:property>
+    </sv:node>
+</sv:node>

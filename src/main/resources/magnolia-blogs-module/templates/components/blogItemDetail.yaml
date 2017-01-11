@@ -1,0 +1,5 @@
+title: Blog item
+description: Blog item detail
+renderType: freemarker
+templateScript: /magnolia-blogs-module/templates/components/blogItemDetail.ftl
+modelClass: nl.tricode.magnolia.blogs.templates.BlogRenderableDefinition

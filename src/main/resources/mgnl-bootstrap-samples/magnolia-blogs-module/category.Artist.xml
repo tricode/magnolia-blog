@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sv:node sv:name="Artist" xmlns:sv="http://www.jcp.org/jcr/sv/1.0">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>mgnl:category</sv:value>
+    </sv:property>
+    <sv:property sv:name="jcr:uuid" sv:type="String">
+        <sv:value>66d075d6-d063-4b2a-84dd-181ac085ad7d</sv:value>
+    </sv:property>
+    <sv:property sv:name="level" sv:type="String">
+        <sv:value>level-1</sv:value>
+    </sv:property>
+    <sv:property sv:name="name" sv:type="String">
+        <sv:value>Artist</sv:value>
+    </sv:property>
+    <sv:node sv:name="Painter">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>mgnl:category</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>c370c868-ce3c-4897-9b19-5b916f2cf9a8</sv:value>
+        </sv:property>
+        <sv:property sv:name="level" sv:type="String">
+            <sv:value>level-1</sv:value>
+        </sv:property>
+        <sv:property sv:name="name" sv:type="String">
+            <sv:value>Painter</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="Actress">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>mgnl:category</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>2b3e5701-0265-49e8-a7fc-e774b4b4be9d</sv:value>
+        </sv:property>
+        <sv:property sv:name="level" sv:type="String">
+            <sv:value>level-1</sv:value>
+        </sv:property>
+    </sv:node>
+</sv:node>
