@@ -101,10 +101,6 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
         return super.execute();
     }
 
-    public TemplatingFunctions getTemplatingFunctions() {
-        return templatingFunctions;
-    }
-
     /**
      * Get all available nodes of type mgnl:blog.
      *
@@ -242,12 +238,24 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
     /**
      * Get categories for given blog node
      *
-     * @param blog ContentMap of blogs.
+     * @param blog ContentMap of blog.
      * @return List of category nodes
      */
     @SuppressWarnings("unused") //Used in freemarker components.
     public List<ContentMap> getBlogCategories(final ContentMap blog) {
-        return getItems(blog.getJCRNode(), BlogsNodeTypes.Blog.PROPERTY_CATEGORIES, BlogRepositoryConstants.CATEGORY);
+        final List<ContentMap> categories = new ArrayList<>(0);
+
+        try {
+            final Value[] values = blog.getJCRNode().getProperty(BlogsNodeTypes.Blog.PROPERTY_CATEGORIES).getValues();
+            if (values != null) {
+                for (Value value : values) {
+                    categories.add(templatingFunctions.contentById(value.getString(), BlogRepositoryConstants.CATEGORY));
+                }
+            }
+        } catch (RepositoryException e) {
+            LOGGER.error("Exception while getting categories: {}", e.getMessage());
+        }
+        return categories;
     }
 
     /**
@@ -386,7 +394,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @param maxResultSize Maximum result size.
      * @return Boolean true when older blog posts exists
      */
-    private boolean hasOlderPosts(int maxResultSize, long totalBlogs, int pageNumber) throws RepositoryException {
+    private static boolean hasOlderPosts(int maxResultSize, long totalBlogs, int pageNumber) throws RepositoryException {
         final int maxPage = (int) Math.ceil((double) totalBlogs / (double) maxResultSize);
         return maxPage >= pageNumber + 1;
     }
@@ -398,22 +406,6 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
         }
         final String sqlBlogItems = JcrUtils.buildQuery(path, nodeType);
         return templatingFunctions.asContentMapList(JcrUtils.getWrappedNodesFromQuery(sqlBlogItems, resultSize, pageNumber, nodeTypeName));
-    }
-
-    private List<ContentMap> getItems(Node item, String nodeType, String workspace) {
-        final List<ContentMap> items = new ArrayList<>(0);
-
-        try {
-            final Value[] values = item.getProperty(nodeType).getValues();
-            if (values != null) {
-                for (Value value : values) {
-                    items.add(templatingFunctions.contentById(value.getString(), workspace));
-                }
-            }
-        } catch (RepositoryException e) {
-            LOGGER.error("Exception while getting items", e.getMessage());
-        }
-        return items;
     }
 
     private String constructCategoryPredicate(final Map<String, String> filter) {
