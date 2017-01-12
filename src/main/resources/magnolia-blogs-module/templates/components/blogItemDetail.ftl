@@ -4,23 +4,6 @@
     <article class="blog-item">
         <h2>${blog.title!"No title found"}</h2>
 
-        [#assign categories = model.getBlogCategories(blog) /]
-        [#if (categories)?size > 0 ]
-            [#assign blogSummariesLink = cmsfn.link(cmsfn.contentById(content.blogSummariesLink)) /]
-
-            <div class="postdetails">
-                <ul class="list-unstyled inline-list blog-categories">
-                    [#list categories as category]
-                        <li>
-                            <a href="${blogSummariesLink}?category=${category.@path}">
-                                <i class="fa fa-star">${category.@name}</i>
-                            </a>
-                        </li>
-                    [/#list]
-                </ul>
-            </div>
-        [/#if]
-
         <section>
             ${blog.message!""}
         </section>

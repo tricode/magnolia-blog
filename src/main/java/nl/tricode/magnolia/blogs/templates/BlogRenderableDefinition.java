@@ -113,6 +113,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @return List of blog nodes sorted by date created in descending order
      * @throws RepositoryException
      */
+    @SuppressWarnings("unused") //Used in freemarker components.
     public List<ContentMap> getBlogs(String path, String maxResultSize) throws RepositoryException {
         int resultSize = Integer.MAX_VALUE;
         if (StringUtils.isNumeric(maxResultSize)) {
