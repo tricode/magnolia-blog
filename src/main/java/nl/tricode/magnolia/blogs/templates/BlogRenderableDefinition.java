@@ -440,9 +440,9 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
     private StringBuilder formQueryString(StringBuilder query, String categoryUuid) throws RepositoryException {
         List<ContentMap> childCategories;
         if (categoryUuid.equalsIgnoreCase("cafebabe-cafe-babe-cafe-babecafebabe")) {
-            childCategories = templatingFunctions.children(templatingFunctions.contentByPath("/", "categories"));
+            childCategories = templatingFunctions.children(templatingFunctions.contentByPath("/", BlogRepositoryConstants.CATEGORY));
         } else {
-            childCategories = templatingFunctions.children(templatingFunctions.contentById(categoryUuid, "categories"));
+            childCategories = templatingFunctions.children(templatingFunctions.contentById(categoryUuid, BlogRepositoryConstants.CATEGORY));
         }
         for (ContentMap childCategory : childCategories) {
             if (!templatingFunctions.children(childCategory).isEmpty()) {
