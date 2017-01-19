@@ -26,6 +26,7 @@ import info.magnolia.objectfactory.ComponentProvider;
 import info.magnolia.objectfactory.Components;
 import info.magnolia.rendering.model.RenderingModel;
 import info.magnolia.rendering.template.RenderableDefinition;
+import info.magnolia.rendering.template.type.TemplateTypeHelper;
 import info.magnolia.templating.functions.TemplatingFunctions;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.commons.iterator.NodeIteratorAdapter;
@@ -38,6 +39,7 @@ import org.mockito.MockitoAnnotations;
 
 import javax.inject.Provider;
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Workspace;
 import javax.jcr.query.Query;
@@ -50,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -73,6 +76,8 @@ public class BlogRenderableDefinitionTest {
     private ComponentProvider mockComponentProvider;
     @Mock
     private I18nContentSupport i18nContentSupport;
+    @Mock
+    private Provider<WebContext> webContextProviderMock;
 
     private Map<String, String> parameters = new HashMap<String, String>();
 
@@ -86,7 +91,7 @@ public class BlogRenderableDefinitionTest {
         Components.setComponentProvider(mockComponentProvider);
         doReturn(i18nContentSupport).when(mockComponentProvider).getComponent(I18nContentSupport.class);
 
-        spyTemplatingFunctions = Mockito.spy(new TemplatingFunctions(mock(Provider.class)));
+        spyTemplatingFunctions = Mockito.spy(new TemplatingFunctions(mock(TemplateTypeHelper.class), mock(Provider.class), webContextProviderMock));
     }
 
     @Test
@@ -156,10 +161,13 @@ public class BlogRenderableDefinitionTest {
     }
 
     @Test
-    public void testAuthorPredicateWithAuthorNotFound() {
+    public void testAuthorPredicateWithAuthorNotFound() throws RepositoryException {
         String id = "louisvutton";
         parameters.put("author", id);
         createInstance();
+
+        doReturn(mockWebContext).when(webContextProviderMock).get();
+        doReturn(mock(Session.class)).when(mockWebContext).getJCRSession(isA(String.class));
 
         String predicate = definition.constructAuthorPredicate();
         Assert.assertEquals(StringUtils.EMPTY, predicate);
