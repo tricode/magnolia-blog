@@ -304,8 +304,8 @@ subApps:
                 configJsFile: /.resources/magnolia-blogs-module/webresources/js/ckeditor/config-richtext.js
                 class: info.magnolia.ui.form.field.definition.RichTextFieldDefinition
               - name: author
-                buttonSelectNewLabel: tricode-blogs.tabBlog.author.select.label
-                buttonSelectOtherLabel: tricode-blogs.tabBlog.author.select.label
+#                buttonSelectNewLabel: tricode-blogs.tabBlog.author.select.label
+#                buttonSelectOtherLabel: tricode-blogs.tabBlog.author.select.label
                 targetWorkspace: contacts
                 appName: contacts
                 class: info.magnolia.ui.form.field.definition.LinkFieldDefinition
@@ -318,19 +318,27 @@ subApps:
               - name: comments
                 defaultValue: true
                 class: info.magnolia.ui.form.field.definition.CheckboxFieldDefinition
+              - name: asset
+                class: info.magnolia.ui.form.field.definition.LinkFieldDefinition
+                targetWorkspace: dam
+                appName: assets
+                description: Choose a file which can be downloaded in a blog detail page after entering an email address
+                identifierToPathConverter:
+                  class: info.magnolia.dam.app.assets.field.translator.AssetCompositeIdKeyTranslator
+                contentPreviewDefinition:
+                  contentPreviewClass: info.magnolia.dam.app.ui.field.DamFilePreviewComponent
           - name: tabCategories
             fields:
               - name: categories
-                label: tricode-blogs.tabCategories.categories.label
                 class: info.magnolia.ui.form.field.definition.MultiValueFieldDefinition
-                buttonSelectAddLabel: tricode-blogs.tabCategories.categories.add.label
+#                buttonSelectAddLabel: tricode-blogs.tabCategories.categories.add.label
                 field:
                   name: linkField
                   class: info.magnolia.ui.form.field.definition.LinkFieldDefinition
                   targetWorkspace: category
                   appName: categories
                   fieldEditable: false
-                  buttonSelectNewLabel: tricode-blogs.tabCategories.categories.linkField.select.label
+#                  buttonSelectNewLabel: tricode-blogs.tabCategories.categories.linkField.select.label
                   identifierToPathConverter:
                     class: info.magnolia.ui.form.field.converter.BaseIdentifierToPathConverter
     actions:

@@ -18,6 +18,7 @@
  */
 package nl.tricode.magnolia.blogs.templates;
 
+import com.google.common.collect.Maps;
 import info.magnolia.cms.util.QueryUtil;
 import info.magnolia.context.MgnlContext;
 import info.magnolia.context.WebContext;
@@ -82,7 +83,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
         super(content, definition, parent);
         this.templatingFunctions = templatingFunctions;
 
-        filter = new HashMap<>();
+        filter = Maps.newHashMap();
 
         final Iterator<Entry<String, String>> it = MgnlContext.getWebContext().getParameters().entrySet().iterator();
         while (it.hasNext()) {
@@ -333,6 +334,15 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
         }
     }
 
+    @SuppressWarnings("unused") //Used in freemarker components.
+    public int getPageNumber() {
+        int pageNumber = 1;
+        if (filter.containsKey(PARAM_PAGE)) {
+            pageNumber = Integer.parseInt(filter.get(PARAM_PAGE));
+        }
+        return pageNumber;
+    }
+
     protected String constructAuthorPredicate() {
         // todo ENHANCEMENT: this method should be private, but us still accessed directly by a test
 
@@ -388,17 +398,6 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
                 "AND p.[mgnl:created] <= CAST('" + dateFormat.format(end.getTime()) + "' AS DATE) ";
     }
 
-    /**
-     * Determine if older blog posts exists
-     *
-     * @param maxResultSize Maximum result size.
-     * @return Boolean true when older blog posts exists
-     */
-    private static boolean hasOlderPosts(int maxResultSize, long totalBlogs, int pageNumber) throws RepositoryException {
-        final int maxPage = (int) Math.ceil((double) totalBlogs / (double) maxResultSize);
-        return maxPage >= pageNumber + 1;
-    }
-
     private List<ContentMap> getLatest(String path, String maxResultSize, String nodeType, int pageNumber, String nodeTypeName) throws RepositoryException {
         int resultSize = DEFAULT_LATEST_COUNT;
         if (StringUtils.isNumeric(maxResultSize)) {
@@ -438,12 +437,8 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @throws RepositoryException
      */
     private StringBuilder formQueryString(StringBuilder query, String categoryUuid) throws RepositoryException {
-        List<ContentMap> childCategories;
-        if (categoryUuid.equalsIgnoreCase("cafebabe-cafe-babe-cafe-babecafebabe")) {
-            childCategories = templatingFunctions.children(templatingFunctions.contentByPath("/", BlogRepositoryConstants.CATEGORY));
-        } else {
-            childCategories = templatingFunctions.children(templatingFunctions.contentById(categoryUuid, BlogRepositoryConstants.CATEGORY));
-        }
+        List<ContentMap> childCategories = templatingFunctions.children(templatingFunctions.contentById(categoryUuid, BlogRepositoryConstants.CATEGORY));
+
         for (ContentMap childCategory : childCategories) {
             if (!templatingFunctions.children(childCategory).isEmpty()) {
                 formQueryString(query, childCategory.getJCRNode().getIdentifier());
@@ -477,14 +472,6 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
         return cloudData;
     }
 
-    private int getPageNumber() {
-        int pageNumber = 1;
-        if (filter.containsKey(PARAM_PAGE)) {
-            pageNumber = Integer.parseInt(filter.get(PARAM_PAGE));
-        }
-        return pageNumber;
-    }
-
     public static String getMonthName(String month) {
         int monthNr = Integer.parseInt(month);
 
@@ -493,6 +480,17 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
         DateFormatSymbols symbols = new DateFormatSymbols(locale);
         String[] monthNames = symbols.getMonths();
         return monthNames[monthNr - 1];
+    }
+
+    /**
+     * Determine if older blog posts exists
+     *
+     * @param maxResultSize Maximum result size.
+     * @return Boolean true when older blog posts exists
+     */
+    private static boolean hasOlderPosts(int maxResultSize, long totalBlogs, int pageNumber) throws RepositoryException {
+        final int maxPage = (int) Math.ceil((double) totalBlogs / (double) maxResultSize);
+        return maxPage >= pageNumber + 1;
     }
 
     private static int getScale(int count, int max) {
