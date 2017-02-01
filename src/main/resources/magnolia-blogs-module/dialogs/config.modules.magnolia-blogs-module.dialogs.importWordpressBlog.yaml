@@ -1,0 +1,35 @@
+actions:
+  commit:
+    class: nl.tricode.magnolia.blogs.dialog.action.SaveWordpressBlogDialogActionDefinition
+  cancel:
+    class: info.magnolia.ui.admincentral.dialog.action.CancelDialogActionDefinition
+form:
+  tabs:
+    - name: import
+      fields:
+        - name: endpoint
+          required: true
+          class: info.magnolia.ui.form.field.definition.TextFieldDefinition
+        - name: username
+          required: true
+          class: info.magnolia.ui.form.field.definition.TextFieldDefinition
+        - verification: false
+          name: password
+          required: true
+          class: info.magnolia.ui.form.field.definition.PasswordFieldDefinition
+        - name: blogID
+          required: true
+          class: info.magnolia.ui.form.field.definition.TextFieldDefinition
+          validators:
+            - name: isNumber
+              pattern: ^[0-9]+$
+              errorMessage: tricode-blogs.importWordpressBlog.import.blogID.errorMessage
+              class: info.magnolia.ui.form.validator.definition.RegexpValidatorDefinition
+        - name: shouldImportImages
+          defaultValue: true
+          type: Boolean
+          class: info.magnolia.ui.form.field.definition.CheckboxFieldDefinition
+        - name: shouldImportContacts
+          defaultValue: true
+          type: Boolean
+          class: info.magnolia.ui.form.field.definition.CheckboxFieldDefinition

@@ -1,0 +1,342 @@
+appClass: info.magnolia.ui.contentapp.ContentApp
+icon: icon-work-item
+class: info.magnolia.ui.contentapp.ConfiguredContentAppDescriptor
+subApps:
+  browser:
+    subAppClass: info.magnolia.ui.contentapp.browser.BrowserSubApp
+    class: info.magnolia.ui.contentapp.browser.BrowserSubAppDescriptor
+    actions:
+      addBlog:
+        subAppId: detail
+        icon: icon-add-node-content
+        nodeType: mgnl:blog
+        appName: tricode-blogs
+        class: info.magnolia.ui.contentapp.detail.action.CreateItemActionDefinition
+        availability:
+          root: true
+          nodeTypes:
+            folder: mgnl:folder
+      editBlog:
+        subAppId: detail
+        icon: icon-edit
+        nodeType: mgnl:blog
+        appName: tricode-blogs
+        class: info.magnolia.ui.contentapp.detail.action.EditItemActionDefinition
+      deleteBlog:
+        successMessage: The item has been deleted
+        command: markAsDeleted
+        icon: icon-delete
+        class: info.magnolia.ui.framework.action.MarkNodeAsDeletedActionDefinition
+      addFolder:
+        icon: icon-add-folder
+        nodeType: mgnl:blogsFolder
+        class: info.magnolia.ui.framework.action.AddFolderActionDefinition
+        availability:
+          root: true
+      editFolder:
+        icon: icon-edit
+        dialogName: magnolia-blogs-module:folder
+        nodeType: mgnl:blogsFolder
+        class: info.magnolia.ui.framework.action.OpenEditDialogActionDefinition
+      deleteFolder:
+        icon: icon-delete
+        class: info.magnolia.ui.framework.action.DeleteItemActionDefinition
+      duplicate:
+        icon: icon-duplicate
+        class: info.magnolia.ui.framework.action.DuplicateNodeActionDefinition
+      activate:
+        command: activateBlogPost
+        icon: icon-publish
+        catalog: activation
+        class: info.magnolia.ui.framework.action.ActivationActionDefinition
+        availability:
+          rules:
+            - name: IsNotDeletedRule
+              implementationClass: info.magnolia.ui.framework.availability.IsNotDeletedRule
+      activateRecursive:
+        recursive: true
+        command: activate
+        icon: icon-publish-incl-sub
+        class: info.magnolia.ui.framework.action.ActivationActionDefinition
+      deactivate:
+        command: deactivate
+        icon: icon-unpublish
+        catalog: activation
+        class: info.magnolia.ui.framework.action.ActivationActionDefinition
+      export:
+        command: export
+        icon: icon-export
+        class: info.magnolia.ui.framework.action.ExportActionDefinition
+      import:
+        name: import
+        dialogName: ui-admincentral:import
+        icon: icon-import
+        class: info.magnolia.ui.framework.action.OpenCreateDialogActionDefinition
+        availability:
+          root: true
+      importWordpressBlog:
+        name: importWordpressBlog
+        dialogName: magnolia-blogs-module:importWordpressBlog
+        icon: icon-import
+        class: info.magnolia.ui.framework.action.OpenCreateDialogActionDefinition
+        availability:
+          root: true
+      confirmDeletion:
+        successActionName: deleteBlog
+        icon: icon-delete
+        class: info.magnolia.ui.framework.action.ConfirmationActionDefinition
+        availability:
+          multiple: true
+          writePermissionRequired: true
+          rules:
+            - name: IsNotDeletedRule
+              implementationClass: info.magnolia.ui.framework.availability.IsNotDeletedRule
+      restorePreviousVersion:
+        icon: icon-undo
+        parentNodeTypeOnly: true
+        class: nl.tricode.magnolia.blogs.action.RestorePreviousBlogsDefinition
+        availability:
+          writePermissionRequired: true
+          rules:
+            - name: IsDeletedRule
+              implementationClass: info.magnolia.ui.framework.availability.IsDeletedRule
+      activateDeletion:
+        command: activate
+        icon: icon-publish
+        catalog: website
+        class: info.magnolia.ui.framework.action.ActivationActionDefinition
+        availability:
+          writePermissionRequired: true
+          access:
+            roles:
+              demo-publisher: demo-project-publisher
+              cms-author: cms-author
+              superuser: superuser
+          rules:
+            - name: IsDeletedRule
+              implementationClass: info.magnolia.ui.framework.availability.IsDeletedRule
+      editActivationDate:
+        icon: icon-edit
+        dialogName: magnolia-blogs-module:updateActivationDate
+        nodeType: mgnl:blog
+        class: info.magnolia.ui.framework.action.OpenEditDialogActionDefinition
+        availability:
+          access:
+            roles:
+              superuser: superuser
+    actionbar:
+      defaultAction: editBlog
+      sections:
+        - name: root
+          groups:
+            - name: addActions
+              items:
+                - name: addBlog
+                - name: addFolder
+            - name: importExportActions
+              items:
+                - name: import
+                - name: importWordpressBlog
+          availability:
+            nodes: false
+            root: true
+        - name: blog
+          groups:
+            - name: editActions
+              items:
+                - name: editBlog
+                - name: confirmDeletion
+                - name: duplicate
+            - name: activationActions
+              items:
+                - name: activate
+                - name: activateDeletion
+                - name: deactivate
+                - name: editActivationDate
+                - name: restorePreviousVersion
+            - name: importExportActions
+              items:
+                - name: export
+          availability:
+            nodeTypes:
+              mgnl-blog: mgnl:blog
+        - name: folder
+          groups:
+            - name: addActions
+              items:
+                - name: addBlog
+                - name: addFolder
+            - name: editActions
+              items:
+                - name: editFolder
+                - name: deleteFolder
+            - name: activationActions
+              items:
+                - name: activate
+                - name: deactivate
+            - name: importExportActions
+              items:
+                - name: export
+                - name: import
+          availability:
+            nodeTypes:
+              mgnl-folder: mgnl:folder
+    workbench:
+      dropConstraintClass: info.magnolia.ui.workbench.tree.drop.OnlyNodesDropConstraint
+      editable: false
+      contentViews:
+        - name: tree
+          class: info.magnolia.ui.workbench.tree.TreePresenterDefinition
+          columns:
+            - name: name
+              editable: true
+              expandRatio: 2.0
+              formatterClass: nl.tricode.magnolia.blogs.column.BlogNameColumnFormatter
+              propertyName: jcrName
+              sortable: true
+              class: info.magnolia.ui.workbench.column.definition.PropertyColumnDefinition
+            - name: author
+              editable: true
+              expandRatio: 2.0
+              formatterClass: nl.tricode.magnolia.blogs.column.AuthorNameColumnFormatter
+              class: info.magnolia.ui.workbench.column.definition.PropertyColumnDefinition
+            - name: path
+              enabled: false
+              expandRatio: 2
+              formatterClass: info.magnolia.ui.workbench.column.PathColumnFormatter
+              class: info.magnolia.ui.workbench.column.definition.MetaDataColumnDefinition
+            - name: status
+              displayInChooseDialog: false
+              formatterClass: info.magnolia.ui.workbench.column.StatusColumnFormatter
+              width: 46
+              class: info.magnolia.ui.workbench.column.definition.StatusColumnDefinition
+            - name: moddate
+              displayInChooseDialog: false
+              formatterClass: info.magnolia.ui.workbench.column.DateColumnFormatter
+              propertyName: mgnl:lastModified
+              sortable: true
+              width: 160
+              class: info.magnolia.ui.workbench.column.definition.MetaDataColumnDefinition
+        - name: list
+          class: info.magnolia.ui.workbench.list.ListPresenterDefinition
+          columns:
+            - name: name
+              editable: true
+              sortable: true
+              expandRatio: 2.0
+              formatterClass: nl.tricode.magnolia.blogs.column.BlogNameColumnFormatter
+              propertyName: jcrName
+              class: info.magnolia.ui.workbench.column.definition.PropertyColumnDefinition
+            - name: author
+              editable: true
+              expandRatio: 2.0
+              formatterClass: nl.tricode.magnolia.blogs.column.AuthorNameColumnFormatter
+              class: info.magnolia.ui.workbench.column.definition.PropertyColumnDefinition
+            - name: path
+              expandRatio: 2
+              formatterClass: info.magnolia.ui.workbench.column.PathColumnFormatter
+              class: info.magnolia.ui.workbench.column.definition.MetaDataColumnDefinition
+            - name: status
+              width: 46
+              displayInChooseDialog: false
+              formatterClass: info.magnolia.ui.workbench.column.StatusColumnFormatter
+              class: info.magnolia.ui.workbench.column.definition.StatusColumnDefinition
+            - name: moddate
+              width: 160
+              sortable: true
+              displayInChooseDialog: false
+              formatterClass: info.magnolia.ui.workbench.column.DateColumnFormatter
+              propertyName: mgnl:lastModified
+              class: info.magnolia.ui.workbench.column.definition.MetaDataColumnDefinition
+        - name: search
+          class: info.magnolia.ui.workbench.search.SearchPresenterDefinition
+          columns:
+            - name: name
+              editable: true
+              expandRatio: 2.0
+              formatterClass: nl.tricode.magnolia.blogs.column.BlogNameColumnFormatter
+              propertyName: jcrName
+              sortable: true
+              class: info.magnolia.ui.workbench.column.definition.PropertyColumnDefinition
+            - name: author
+              editable: true
+              expandRatio: 2.0
+              formatterClass: nl.tricode.magnolia.blogs.column.AuthorNameColumnFormatter
+              class: info.magnolia.ui.workbench.column.definition.PropertyColumnDefinition
+            - name: path
+              expandRatio: 2
+              formatterClass: info.magnolia.ui.workbench.column.PathColumnFormatter
+              class: info.magnolia.ui.workbench.column.definition.MetaDataColumnDefinition
+            - name: status
+              displayInChooseDialog: false
+              formatterClass: info.magnolia.ui.workbench.column.StatusColumnFormatter
+              width: 46
+              class: info.magnolia.ui.workbench.column.definition.StatusColumnDefinition
+            - name: moddate
+              displayInChooseDialog: false
+              formatterClass: info.magnolia.ui.workbench.column.DateColumnFormatter
+              propertyName: mgnl:lastModified
+              sortable: true
+              width: 160
+              class: info.magnolia.ui.workbench.column.definition.MetaDataColumnDefinition
+    contentConnector:
+      includeProperties: false
+      workspace: collaboration
+      defaultOrder: jcrName
+      rootPath: /
+      nodeTypes:
+        - name: mgnl:blog
+          icon: icon-node-content
+        - name: mgnl:blogsFolder
+          icon: icon-folder
+  detail:
+    subAppClass: nl.tricode.magnolia.blogs.app.BlogDetailSubApp
+    class: info.magnolia.ui.contentapp.detail.DetailSubAppDescriptor
+    editor:
+      nodeType:
+        name: mgnl:blog
+        icon: icon-node-content
+      actions:
+        - name: commit
+        - name: cancel
+      form:
+        tabs:
+          - name: blog
+            fields:
+              - name: title
+                required: true
+                class: info.magnolia.ui.form.field.definition.TextFieldDefinition
+              - name: summary
+                rows: 3
+                required: true
+                class: info.magnolia.ui.form.field.definition.TextFieldDefinition
+              - name: message
+                configJsFile: /.resources/magnolia-blogs-module/ckeditor/config-richtext.js
+                class: info.magnolia.ui.form.field.definition.RichTextFieldDefinition
+              - name: author
+                i18nBasename: mgnl-i18n.app-tricode-blogs-messages
+                buttonSelectOtherLabel: tricode-blogs.blog.author.select.label
+                buttonSelectNewLabel: tricode-blogs.blog.author.select.label
+                targetWorkspace: contacts
+                appName: contacts
+                class: info.magnolia.ui.form.field.definition.LinkFieldDefinition
+                identifierToPathConverter:
+                  class: info.magnolia.ui.form.field.converter.BaseIdentifierToPathConverter
+              - name: fileUpload
+                binaryNodeName: image
+                allowedMimeTypePattern: image.*
+                class: info.magnolia.dam.app.ui.field.definition.DamUploadFieldDefinition
+              - name: comments
+                defaultValue: true
+                class: info.magnolia.ui.form.field.definition.CheckboxFieldDefinition
+    actions:
+      commit:
+        propertyName: title
+        class: nl.tricode.magnolia.blogs.form.action.UniqueNameSaveFormActionDefinition
+      cancel:
+        class: info.magnolia.ui.form.action.CancelFormActionDefinition
+    contentConnector:
+      workspace: collaboration
+permissions:
+  roles:
+    blog-editor: blog-editor
