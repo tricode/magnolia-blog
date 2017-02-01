@@ -32,6 +32,10 @@ public final class BlogWorkspaceUtil {
 
     /**
      * Create a new Node Unique NodeName.
+     * @param node Node.
+     * @param propertyName Property name.
+     * @return Unique node name.
+     * @throws RepositoryException Handling RepositoryException.
      */
     public static String generateUniqueNodeName(final Node node, final String propertyName)
             throws RepositoryException {
@@ -57,10 +61,10 @@ public final class BlogWorkspaceUtil {
     /**
      * Define the Node Name. Node Name will be title in lower case and spaces replaced by '-'
      * Characters that will be removed are % ^ { } etc.
+     * @Return defined node name.
      */
     private static String defineNodeName(final Node node, final String propertyName) throws RepositoryException {
         final String title = node.getProperty(propertyName).getString();
         return BlogWorkspaceUtil.filterNonWordCharacters(title).toLowerCase();
     }
-
 }

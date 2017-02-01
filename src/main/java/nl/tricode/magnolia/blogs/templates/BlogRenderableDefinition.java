@@ -108,7 +108,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @param path          Start node path in hierarchy
      * @param maxResultSize Number of items to return. When empty <code>Integer.MAX_VALUE</code> will be used.
      * @return List of blog nodes sorted by date created in descending order
-     * @throws RepositoryException
+     * @throws RepositoryException Handling RepositoryException.
      */
     @SuppressWarnings("unused") //Used in freemarker components.
     public List<ContentMap> getBlogs(String path, String maxResultSize) throws RepositoryException {
@@ -127,7 +127,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @param path          Start node path in hierarchy
      * @param maxResultSize Number of items to return. When empty <code>5</code> will be used.
      * @return List of blog nodes sorted by date created in descending order
-     * @throws RepositoryException
+     * @throws RepositoryException RepositoryException Handling RepositoryException.
      */
     @SuppressWarnings("unused") //Used in freemarker components.
     public List<ContentMap> getLatestBlogs(String path, String maxResultSize) throws RepositoryException {
@@ -138,10 +138,9 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @param path          Repository path
      * @param maxResultSize the result size that is returned
      * @param categoryUuid  the category uuid to take only the blogs from this category
-     * @throws RepositoryException
-     * @returns a list of blog nodes sorted by date created in descending order for the specified maxResultSize parameter
+     * @throws RepositoryException Handling RepositoryException.
+     * @return a list of blog nodes sorted by date created in descending order for the specified maxResultSize parameter
      */
-    @SuppressWarnings("unused") //Used in freemarker components.
     public List<ContentMap> getLatestBlogs(String path, String maxResultSize, String categoryUuid) throws RepositoryException {
         int resultSize = DEFAULT_LATEST_COUNT;
         if (StringUtils.isNumeric(maxResultSize)) {
@@ -160,9 +159,9 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      *
      * @param path       Start node path in hierarchy
      * @param useFilters <code>true</code> to use filters
+     * @throws RepositoryException Handling RepositoryException.
      * @return long Number of blog posts
      */
-    @SuppressWarnings("unused") //Used in freemarker components.
     public int getBlogCount(String path, boolean useFilters) throws RepositoryException {
         final String customFilters = constructAuthorPredicate() + constructCategoryPredicate(filter) + constructDateCreatedPredicate();
         final String sqlBlogItems = JcrUtils.buildQuery(path, BlogsNodeTypes.Blog.NAME, useFilters, customFilters);
@@ -170,12 +169,11 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
     }
 
     /**
-     * @param filterProperty
-     * @param filterIdentifier
-     * @return
-     * @throws RepositoryException
+     * @param filterProperty filter property
+     * @param filterIdentifier filter identifier
+     * @return The related blog count
+     * @throws RepositoryException Handling RepositoryException.
      */
-    @SuppressWarnings("unused") //Used in freemarker components.
     public int getRelatedBlogCount(String filterProperty, String filterIdentifier) throws RepositoryException {
         final String sqlBlogItems = JcrUtils.buildBlogCountQuery(filterProperty, filterIdentifier);
         return IteratorUtils.toList(QueryUtil.search(BlogRepositoryConstants.COLLABORATION, sqlBlogItems, Query.JCR_SQL2, BlogsNodeTypes.Blog.NAME)).size();
@@ -186,9 +184,9 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      *
      * @param path          Path in the repository.
      * @param maxResultSize Maximum result size.
+     * @throws RepositoryException Handling RepositoryException.
      * @return Boolean true when older blog posts exists
      */
-    @SuppressWarnings("unused") //Used in freemarker components.
     public boolean hasOlderPosts(String path, int maxResultSize) throws RepositoryException {
         final long totalBlogs = getBlogCount(path, true);
         final int pageNumber = getPageNumber();
@@ -201,9 +199,9 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      *
      * @param path          Path in the repository.
      * @param maxResultSize Maximum result size.
+     * @throws RepositoryException Handling RepositoryException.
      * @return page number with older blog posts
      */
-    @SuppressWarnings("unused") //Used in freemarker components.
     public int pageOlderPosts(String path, int maxResultSize) throws RepositoryException {
         if (hasOlderPosts(path, maxResultSize)) {
             return getPageNumber() + 1;
@@ -217,7 +215,6 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      *
      * @return Boolean true when newer blog posts exists
      */
-    @SuppressWarnings("unused") //Used in freemarker components.
     public Boolean hasNewerPosts() {
         return getPageNumber() > 1;
     }
@@ -227,7 +224,6 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      *
      * @return page number with newer blog posts
      */
-    @SuppressWarnings("unused") //Used in freemarker components.
     public int pageNewerPosts() {
         if (hasNewerPosts()) {
             return getPageNumber() - 1;
@@ -242,7 +238,6 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @param blog ContentMap of blog.
      * @return List of category nodes
      */
-    @SuppressWarnings("unused") //Used in freemarker components.
     public List<ContentMap> getBlogCategories(final ContentMap blog) {
         final List<ContentMap> categories = new ArrayList<>(0);
 
@@ -264,7 +259,6 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      *
      * @return Collection of categories with relative score
      */
-    @SuppressWarnings("unused") //Used in freemarker components.
     public List<CloudMap> getCategoryCloud() {
         try {
             final Iterable<Node> nodes = NodeUtil.asIterable(QueryUtil.search(BlogRepositoryConstants.COLLABORATION, "SELECT p.* from [mgnl:category] AS p WHERE ISDESCENDANTNODE(p,'/')"));
@@ -280,7 +274,6 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      *
      * @return Collection of categories with relative score
      */
-    @SuppressWarnings("unused") //Used in freemarker components.
     public List<CloudMap> getAuthorCloud() {
         try {
             final Iterable<Node> nodes = NodeUtil.asIterable(QueryUtil.search(BlogRepositoryConstants.CONTACTS, "SELECT p.* from [mgnl:contact] AS p WHERE ISDESCENDANTNODE(p,'/')"));
@@ -296,7 +289,6 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      *
      * @return A list containing properties <i>year</i> and <i>month</i>
      */
-    @SuppressWarnings("unused") //Used in freemarker components.
     public List<Map<String, Object>> getArchivedDates() {
         final Set<Map<String, Object>> set = new HashSet<>();
 
@@ -322,7 +314,6 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      *
      * @return All blogs
      */
-    @SuppressWarnings("unused") //Used in freemarker components.
     public List<Node> getAllBlogs() {
         final String sqlBlogItems = JcrUtils.buildQuery("/", BlogsNodeTypes.Blog.NAME);
         try {
@@ -334,7 +325,6 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
         }
     }
 
-    @SuppressWarnings("unused") //Used in freemarker components.
     public int getPageNumber() {
         int pageNumber = 1;
         if (filter.containsKey(PARAM_PAGE)) {
@@ -434,7 +424,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @param query        a new StringBuilder to keep the content on recursive calls
      * @param categoryUuid the uuid of the category
      * @return a query string used to filter the blogs by categories
-     * @throws RepositoryException
+     * @throws RepositoryException Handling RepositoryException.
      */
     private StringBuilder formQueryString(StringBuilder query, String categoryUuid) throws RepositoryException {
         List<ContentMap> childCategories = templatingFunctions.children(templatingFunctions.contentById(categoryUuid, BlogRepositoryConstants.CATEGORY));

@@ -47,7 +47,7 @@ public class BlogTemplatingFunctions {
      * Returns all available blog entries starting from root and no additional filters
      *
      * @return wrapper object
-     * throws UnableToGetBlogException throw when the blogs cannot be read from the repository.
+     * throws UnableToGetLatestBlogException throw when the blogs cannot be read from the repository.
      */
     public BlogItemsWrapper allBlogs() throws UnableToGetLatestBlogsException {
         return blogService.getLatestBlogItems("/", 1, Integer.MAX_VALUE, "");
@@ -59,7 +59,7 @@ public class BlogTemplatingFunctions {
      * @param categoryName Category (mgnl:category) name
      * @param workspace    Category workspace name
      * @return wrapper object
-     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetLatestBlogsException
+     * @throws UnableToGetLatestBlogsException Unable to get latest blogs
      */
     public BlogItemsWrapper allBlogsByCategory(String categoryName, String workspace)
             throws UnableToGetLatestBlogsException {
@@ -73,7 +73,7 @@ public class BlogTemplatingFunctions {
      * @param pageNumber        page number
      * @param maxResultsPerPage Maximum results returned per page
      * @return wrapper object
-     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetLatestBlogsException
+     * @throws UnableToGetLatestBlogsException Unable to get latest blogs
      */
     public BlogItemsWrapper pagedBlogs(String searchRootPath, int pageNumber, int maxResultsPerPage)
             throws UnableToGetLatestBlogsException {
@@ -89,7 +89,7 @@ public class BlogTemplatingFunctions {
      * @param categoryName      Category (mgnl:category) name
      * @param workspace         Category workspace name
      * @return wrapper object
-     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetLatestBlogsException
+     * @throws UnableToGetLatestBlogsException Unable to get latest blogs
      */
     public BlogItemsWrapper pagedBlogsByCategory(String searchRootPath, int pageNumber, int maxResultsPerPage, String categoryName, String workspace)
             throws UnableToGetLatestBlogsException {
@@ -101,7 +101,7 @@ public class BlogTemplatingFunctions {
      *
      * @param id Blog identifier
      * @return Blog content
-     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetBlogException
+     * @throws UnableToGetBlogException Unable to get blogs
      */
     public ContentMap blogContentById(String id) throws UnableToGetBlogException {
         return templatingFunctions.asContentMap(blogById(id));
@@ -112,7 +112,7 @@ public class BlogTemplatingFunctions {
      *
      * @param name Unique blog name
      * @return Blog content
-     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetBlogException
+     * @throws UnableToGetBlogException Unable to get blogs
      */
     public ContentMap blogContentByName(String name) throws UnableToGetBlogException {
         return templatingFunctions.asContentMap(blogByName(name));
@@ -123,7 +123,7 @@ public class BlogTemplatingFunctions {
      *
      * @param id Blog identifier
      * @return Blog node
-     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetBlogException
+     * @throws UnableToGetBlogException Unable to get blogs
      */
     public Node blogById(String id) throws UnableToGetBlogException {
         return blogService.getBlogById(id);
@@ -134,7 +134,7 @@ public class BlogTemplatingFunctions {
      *
      * @param name Unique blog name
      * @return Blog node
-     * @throws nl.tricode.magnolia.blogs.exception.UnableToGetBlogException
+     * @throws UnableToGetBlogException Unable to get blogs
      */
     public Node blogByName(String name) throws UnableToGetBlogException {
         return blogService.getBlogByName(name);
@@ -146,8 +146,8 @@ public class BlogTemplatingFunctions {
      * @param id                 Blog identifier
      * @param maxResultsReturned Maximum returned blog items
      * @return wrapper object
-     * @throws UnableToGetBlogException
-     * @throws UnableToGetLatestBlogsException
+     * @throws UnableToGetBlogException Unable to get blogs
+     * @throws UnableToGetLatestBlogsException Unable to get latest blogs
      */
     public BlogItemsWrapper relatedBlogsById(String id, int maxResultsReturned)
             throws UnableToGetBlogException, UnableToGetLatestBlogsException {
@@ -160,12 +160,11 @@ public class BlogTemplatingFunctions {
      * @param name               Unique blog name
      * @param maxResultsReturned Maximum returned blog items
      * @return wrapper object
-     * @throws UnableToGetBlogException
-     * @throws UnableToGetLatestBlogsException
+     * @throws UnableToGetBlogException Unable to get blogs
+     * @throws UnableToGetLatestBlogsException Unable to get latest blogs
      */
     public BlogItemsWrapper relatedBlogsByName(String name, int maxResultsReturned)
             throws UnableToGetBlogException, UnableToGetLatestBlogsException {
         return blogService.getRelatedBlogItemsByName(name, maxResultsReturned);
     }
-
 }

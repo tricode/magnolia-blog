@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public final class JcrUtils {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(JcrUtils.class);
 
     private JcrUtils() {
@@ -46,7 +45,7 @@ public final class JcrUtils {
      * @param query         Query string
      * @param maxResultSize Max results returned
      * @param pageNumber    paging number
-     * @param nodeTypeName
+     * @param nodeTypeName  Node type name
      * @return List of blog nodes
      * @throws javax.jcr.RepositoryException In case of read error
      */
@@ -58,20 +57,20 @@ public final class JcrUtils {
     }
 
     /**
-     * @param path
-     * @param contentType
-     * @return
+     * @param path Path in repository
+     * @param contentType Content type
+     * @return return a build query
      */
     public static String buildQuery(final String path, final String contentType) {
         return buildQuery(path, contentType, false, null);
     }
 
     /**
-     * @param path
-     * @param contentType
-     * @param useFilters
-     * @param customFilters
-     * @return
+     * @param path Path in repository
+     * @param contentType Content type
+     * @param useFilters Boolean use fileter
+     * @param customFilters Custom filters
+     * @return A jcr query.
      */
     public static String buildQuery(final String path,
                                     final String contentType,
@@ -93,9 +92,9 @@ public final class JcrUtils {
     }
 
     /**
-     * @param filterProperty
-     * @param filterIdentifier
-     * @return
+     * @param filterProperty Filter property
+     * @param filterIdentifier Filter Identifier
+     * @return A blog count query.
      */
     public static String buildBlogCountQuery(final String filterProperty, final String filterIdentifier) {
         final StringBuilder query = new StringBuilder("SELECT p.* from [mgnl:blog] AS p WHERE ISDESCENDANTNODE(p,'/') AND contains(p.")
@@ -125,8 +124,6 @@ public final class JcrUtils {
             itemsListPaged.add(new I18nNodeWrapper(items.nextNode()));
             count++;
         }
-
         return itemsListPaged;
     }
-
 }

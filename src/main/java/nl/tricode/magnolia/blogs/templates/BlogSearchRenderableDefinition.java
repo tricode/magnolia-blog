@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Set;
 
 public class BlogSearchRenderableDefinition<RD extends RenderableDefinition> extends RenderingModelImpl<RD> {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(BlogSearchRenderableDefinition.class);
 
     private static final String SEARCH_TERM = "s";
@@ -199,8 +198,10 @@ public class BlogSearchRenderableDefinition<RD extends RenderableDefinition> ext
      * @param statement     SQL2 statement
      * @param maxResultSize Max results returned
      * @param pageNumber    paging number
-     * @throws javax.jcr.LoginException
-     * @throws javax.jcr.RepositoryException
+     * @param workspace     Workspace in repostory.
+     * @param nodeType      Node type.
+     * @throws javax.jcr.LoginException Login exception.
+     * @throws RepositoryException Handling RepositoryException.
      */
     protected void executePagedNodesQuery(String statement, int maxResultSize, int pageNumber, String workspace, String nodeType) throws LoginException, RepositoryException {
         List<Node> nodeList = new ArrayList<Node>(0);

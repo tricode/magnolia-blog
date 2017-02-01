@@ -40,7 +40,6 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
 
     /**
      * Constructor.
-     * <p/>
      * Here you can register deltas for tasks that need to be run when UPDATING an EXISTING module.
      */
     public BlogsModuleVersionHandler() {
