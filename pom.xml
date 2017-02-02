@@ -51,7 +51,27 @@
         <dependency>
             <groupId>info.magnolia</groupId>
             <artifactId>magnolia-module-categorization</artifactId>
-            <version>2.5</version>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>info.magnolia</groupId>
+            <artifactId>magnolia-module-rssaggregator</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>info.magnolia.templating</groupId>
+            <artifactId>magnolia-templating-kit</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>info.magnolia.templating</groupId>
+            <artifactId>magnolia-templating-essentials-models</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>info.magnolia.templating</groupId>
+            <artifactId>magnolia-templating-essentials-imaging</artifactId>
+            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
