@@ -32,5 +32,12 @@ Copyright (c) 2015 Tricode and contributors. Released under a [GNUv3 license](ht
 * Upgrade to Magnolia 5.4.4
 
 ##Release notes 1.1.5
+* Failed Release, use 1.1.6
+
+##Release notes 1.1.6
 * Upgrade to Magnolia 5.5
 * Update to Java 8
+* Detected dependency issues with this version. Will be resolved in next version.
+
+##Release notes 1.1.7
+* Fix for the dependency issues.
