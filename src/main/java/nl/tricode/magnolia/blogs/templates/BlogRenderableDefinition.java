@@ -45,6 +45,7 @@ import javax.jcr.query.Query;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -130,8 +131,8 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @throws RepositoryException RepositoryException Handling RepositoryException.
      */
     @SuppressWarnings("unused") //Used in freemarker components.
-    public List<ContentMap> getLatestBlogs(String path, String maxResultSize) throws RepositoryException {
-        return getLatest(path, maxResultSize, BlogsNodeTypes.Blog.NAME, getPageNumber(), BlogsNodeTypes.Blog.NAME);
+    public List<ContentMap> getLatestBlogs(String path, String maxResultSize, boolean publishedBlogsOnly) throws RepositoryException {
+        return getLatest(path, maxResultSize, BlogsNodeTypes.Blog.NAME, getPageNumber(), BlogsNodeTypes.Blog.NAME, publishedBlogsOnly);
     }
 
     /**
@@ -141,12 +142,12 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @throws RepositoryException Handling RepositoryException.
      * @return a list of blog nodes sorted by date created in descending order for the specified maxResultSize parameter
      */
-    public List<ContentMap> getLatestBlogs(String path, String maxResultSize, String categoryUuid) throws RepositoryException {
+    public List<ContentMap> getLatestBlogs(String path, String maxResultSize, String categoryUuid, boolean publishedBlogsOnly) throws RepositoryException {
         int resultSize = DEFAULT_LATEST_COUNT;
         if (StringUtils.isNumeric(maxResultSize)) {
             resultSize = Integer.parseInt(maxResultSize);
         }
-        StringBuilder queryString = formQueryString(new StringBuilder(), categoryUuid);
+        StringBuilder queryString = formQueryString(new StringBuilder(), categoryUuid, publishedBlogsOnly);
         return templatingFunctions.asContentMapList(JcrUtils.getWrappedNodesFromQuery(
                 "SELECT p.* from [mgnl:blog] AS p WHERE ISDESCENDANTNODE(p,'/') AND CONTAINS(p.categories, '" +
                         categoryUuid + "') " + queryString + " ORDER BY p.[mgnl:created] desc",
@@ -388,12 +389,12 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
                 "AND p.[mgnl:created] <= CAST('" + dateFormat.format(end.getTime()) + "' AS DATE) ";
     }
 
-    private List<ContentMap> getLatest(String path, String maxResultSize, String nodeType, int pageNumber, String nodeTypeName) throws RepositoryException {
+    private List<ContentMap> getLatest(String path, String maxResultSize, String nodeType, int pageNumber, String nodeTypeName, boolean publishedBlogsOnly) throws RepositoryException {
         int resultSize = DEFAULT_LATEST_COUNT;
         if (StringUtils.isNumeric(maxResultSize)) {
             resultSize = Integer.parseInt(maxResultSize);
         }
-        final String sqlBlogItems = JcrUtils.buildQuery(path, nodeType);
+        final String sqlBlogItems = JcrUtils.buildQuery(path, nodeType, publishedBlogsOnly, constructPublishDatePredicate(publishedBlogsOnly));
         return templatingFunctions.asContentMapList(JcrUtils.getWrappedNodesFromQuery(sqlBlogItems, resultSize, pageNumber, nodeTypeName));
     }
 
@@ -418,6 +419,17 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
         return StringUtils.EMPTY;
     }
 
+    private String constructPublishDatePredicate(boolean publishedBlogsOnly) {
+        if(publishedBlogsOnly) {
+            StringBuilder filterProperty = new StringBuilder("");
+            filterProperty.append("AND ( p.publishDate IS NULL OR p.publishDate <= CAST('").append(LocalDateTime.now()).append("' AS DATE)) ");
+            return filterProperty.toString();
+        }else{
+            return null;
+        }
+    }
+
+
     /**
      * Forms a query string like this "OR CONTAINS(p.categories, '"uuid"')" and appends it to each other.
      *
@@ -426,14 +438,17 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @return a query string used to filter the blogs by categories
      * @throws RepositoryException Handling RepositoryException.
      */
-    private StringBuilder formQueryString(StringBuilder query, String categoryUuid) throws RepositoryException {
+    private StringBuilder formQueryString(StringBuilder query, String categoryUuid, boolean publishedBlogsOnly) throws RepositoryException {
         List<ContentMap> childCategories = templatingFunctions.children(templatingFunctions.contentById(categoryUuid, BlogRepositoryConstants.CATEGORY));
 
         for (ContentMap childCategory : childCategories) {
             if (!templatingFunctions.children(childCategory).isEmpty()) {
-                formQueryString(query, childCategory.getJCRNode().getIdentifier());
+                formQueryString(query, childCategory.getJCRNode().getIdentifier(),publishedBlogsOnly);
             }
             query.append("OR CONTAINS(p.categories, '").append(childCategory.getJCRNode().getIdentifier()).append("') ");
+        }
+        if(publishedBlogsOnly){
+            query.append("AND ( p.publishDate IS NULL OR p.publishDate <= CAST('").append(LocalDateTime.now()).append("' AS DATE)) ");
         }
         return query;
     }

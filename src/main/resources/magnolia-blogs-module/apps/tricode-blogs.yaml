@@ -327,6 +327,9 @@ subApps:
                   class: info.magnolia.dam.app.assets.field.translator.AssetCompositeIdKeyTranslator
                 contentPreviewDefinition:
                   contentPreviewClass: info.magnolia.dam.app.ui.field.DamFilePreviewComponent
+              - name: publishDate
+                type: Date
+                class: nl.tricode.magnolia.blogs.form.action.CurrentDateFieldDefinition
           - name: tabCategories
             fields:
               - name: categories
