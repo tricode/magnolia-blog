@@ -1,13 +1,13 @@
+form:
+  tabs:
+    - name: tabMain
+      fields:
+        - name: initialActivationDate
+          type: Date
+          time: true
+          class: info.magnolia.ui.form.field.definition.DateFieldDefinition
 actions:
   commit:
     class: nl.tricode.magnolia.blogs.dialog.action.SaveInitialActivationDateDialogActionDefinition
   cancel:
     class: info.magnolia.ui.admincentral.dialog.action.CancelDialogActionDefinition
-form:
-  tabs:
-    - name: main
-      fields:
-        - time: true
-          name: initialActivationDate
-          type: Date
-          class: info.magnolia.ui.form.field.definition.DateFieldDefinition

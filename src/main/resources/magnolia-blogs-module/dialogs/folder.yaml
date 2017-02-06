@@ -1,11 +1,11 @@
+form:
+  tabs:
+    - name: tabFolder
+      fields:
+        - name: jcrName
+          class: info.magnolia.ui.form.field.definition.TextFieldDefinition
 actions:
   commit:
     class: info.magnolia.ui.admincentral.dialog.action.SaveDialogActionDefinition
   cancel:
     class: info.magnolia.ui.admincentral.dialog.action.CancelDialogActionDefinition
-form:
-  tabs:
-    - name: folder
-      fields:
-        - name: jcrName
-          class: info.magnolia.ui.form.field.definition.TextFieldDefinition

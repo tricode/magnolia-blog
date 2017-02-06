@@ -66,6 +66,11 @@ public class BlogsModuleVersionHandler extends DefaultModuleVersionHandler {
                 .addTask(new RemoveNodeTask("Remove old nodes", "/modules/" + MODULE_NAME + "/apps"))
                 .addTask(new RemoveNodeTask("Remove old nodes", "/modules/" + MODULE_NAME + "/dialogs"))
         );
+
+        register(DeltaBuilder.update("1.1.8", "Add publish date to blogs")
+                .addTask(new BootstrapSingleModuleResource("Update config", "Add new CurrentDateField definition",
+                        "/config/config.modules.ui-framework.fieldTypes.currentDateField.xml", ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING))
+        );
     }
 
     /**

@@ -8,7 +8,7 @@ to add to your Magnolia website.
 
 ## Prerequisites
 * [git](http://git-scm.com/)
-* [java 7](http://java.com)
+* [java 8](http://java.com)
 * [Maven 3](http://maven.apache.org)
 
 ## Features
@@ -41,3 +41,6 @@ Copyright (c) 2015 Tricode and contributors. Released under a [GNUv3 license](ht
 
 ##Release notes 1.1.7
 * Fix for the dependency issues.
+
+##Release notes 1.1.8
+* Add 'publish date' to blogs
