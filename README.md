@@ -44,3 +44,6 @@ Copyright (c) 2015 Tricode and contributors. Released under a [GNUv3 license](ht
 
 ##Release notes 1.1.8
 * Add 'publish date' to blogs
+
+##Release notes 1.1.9
+* Prevent huge stacktraces in logs when blog authorId is not found
