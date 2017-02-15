@@ -37,9 +37,6 @@ public final class BlogsNodeTypes {
         // Node Type Name
         public static final String NAME = NodeTypes.MGNL_PREFIX + "blog";
 
-        // Node Type Folder
-        public static final String FOLDER = NodeTypes.MGNL_PREFIX + "blogsFolder";
-
         // Property Name
         public static final String PROPERTY_TITLE = "title";
         public static final String PROPERTY_MESSAGE = "message";
@@ -50,6 +47,18 @@ public final class BlogsNodeTypes {
         public static final String PROPERTY_INITIALACTIVATIONDATE = "initialActivationDate";
 
         private Blog() {
+            // Prevent instantiating this class
+        }
+    }
+
+    /**
+     * Represents the nodeType mgnl:blogsFolder.
+     */
+    public static class Folder {
+        // Node Type Name
+        public static final String NAME = NodeTypes.MGNL_PREFIX + "blogsFolder";
+
+        private Folder() {
             // Prevent instantiating this class
         }
     }
