@@ -30,7 +30,7 @@ import info.magnolia.rendering.template.RenderableDefinition;
 import info.magnolia.templating.functions.TemplatingFunctions;
 import nl.tricode.magnolia.blogs.BlogsNodeTypes;
 import nl.tricode.magnolia.blogs.util.BlogRepositoryConstants;
-import nl.tricode.magnolia.blogs.util.JcrUtils;
+import nl.tricode.magnolia.blogs.util.BlogJcrUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -118,8 +118,8 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
             resultSize = Integer.parseInt(maxResultSize);
         }
         final String customFilters = constructAuthorPredicate() + constructCategoryPredicate(filter) + constructDateCreatedPredicate();
-        final String sqlBlogItems = JcrUtils.buildQuery(path, BlogsNodeTypes.Blog.NAME, true, customFilters);
-        return templatingFunctions.asContentMapList(JcrUtils.getWrappedNodesFromQuery(sqlBlogItems, resultSize, getPageNumber(), BlogsNodeTypes.Blog.NAME));
+        final String sqlBlogItems = BlogJcrUtils.buildQuery(path, BlogsNodeTypes.Blog.NAME, true, customFilters);
+        return templatingFunctions.asContentMapList(BlogJcrUtils.getWrappedNodesFromQuery(sqlBlogItems, resultSize, getPageNumber(), BlogsNodeTypes.Blog.NAME));
     }
 
     /**
@@ -148,7 +148,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
             resultSize = Integer.parseInt(maxResultSize);
         }
         StringBuilder queryString = formQueryString(new StringBuilder(), categoryUuid, publishedBlogsOnly);
-        return templatingFunctions.asContentMapList(JcrUtils.getWrappedNodesFromQuery(
+        return templatingFunctions.asContentMapList(BlogJcrUtils.getWrappedNodesFromQuery(
                 "SELECT p.* from [mgnl:blog] AS p WHERE ISDESCENDANTNODE(p,'/') AND CONTAINS(p.categories, '" +
                         categoryUuid + "') " + queryString + " ORDER BY p.[mgnl:created] desc",
                 resultSize, 1, BlogsNodeTypes.Blog.NAME));
@@ -165,7 +165,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      */
     public int getBlogCount(String path, boolean useFilters) throws RepositoryException {
         final String customFilters = constructAuthorPredicate() + constructCategoryPredicate(filter) + constructDateCreatedPredicate();
-        final String sqlBlogItems = JcrUtils.buildQuery(path, BlogsNodeTypes.Blog.NAME, useFilters, customFilters);
+        final String sqlBlogItems = BlogJcrUtils.buildQuery(path, BlogsNodeTypes.Blog.NAME, useFilters, customFilters);
         return IteratorUtils.toList(QueryUtil.search(BlogRepositoryConstants.COLLABORATION, sqlBlogItems, Query.JCR_SQL2, BlogsNodeTypes.Blog.NAME)).size();
     }
 
@@ -176,7 +176,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @throws RepositoryException Handling RepositoryException.
      */
     public int getRelatedBlogCount(String filterProperty, String filterIdentifier) throws RepositoryException {
-        final String sqlBlogItems = JcrUtils.buildBlogCountQuery(filterProperty, filterIdentifier);
+        final String sqlBlogItems = BlogJcrUtils.buildBlogCountQuery(filterProperty, filterIdentifier);
         return IteratorUtils.toList(QueryUtil.search(BlogRepositoryConstants.COLLABORATION, sqlBlogItems, Query.JCR_SQL2, BlogsNodeTypes.Blog.NAME)).size();
     }
 
@@ -316,7 +316,7 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
      * @return All blogs
      */
     public List<Node> getAllBlogs() {
-        final String sqlBlogItems = JcrUtils.buildQuery("/", BlogsNodeTypes.Blog.NAME);
+        final String sqlBlogItems = BlogJcrUtils.buildQuery("/", BlogsNodeTypes.Blog.NAME);
         try {
             final NodeIterator items = QueryUtil.search(BlogRepositoryConstants.COLLABORATION, sqlBlogItems, Query.JCR_SQL2, BlogsNodeTypes.Blog.NAME);
             return NodeUtil.asList(NodeUtil.asIterable(items));
@@ -394,8 +394,8 @@ public class BlogRenderableDefinition<RD extends RenderableDefinition> extends R
         if (StringUtils.isNumeric(maxResultSize)) {
             resultSize = Integer.parseInt(maxResultSize);
         }
-        final String sqlBlogItems = JcrUtils.buildQuery(path, nodeType, publishedBlogsOnly, constructPublishDatePredicate(publishedBlogsOnly));
-        return templatingFunctions.asContentMapList(JcrUtils.getWrappedNodesFromQuery(sqlBlogItems, resultSize, pageNumber, nodeTypeName));
+        final String sqlBlogItems = BlogJcrUtils.buildQuery(path, nodeType, publishedBlogsOnly, constructPublishDatePredicate(publishedBlogsOnly));
+        return templatingFunctions.asContentMapList(BlogJcrUtils.getWrappedNodesFromQuery(sqlBlogItems, resultSize, pageNumber, nodeTypeName));
     }
 
     private String constructCategoryPredicate(final Map<String, String> filter) {

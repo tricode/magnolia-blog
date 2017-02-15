@@ -32,10 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public final class JcrUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JcrUtils.class);
+public final class BlogJcrUtils {
 
-    private JcrUtils() {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BlogJcrUtils.class);
+
+    private BlogJcrUtils() {
         // Util class, prevent instantiating
     }
 
@@ -57,7 +58,7 @@ public final class JcrUtils {
     }
 
     /**
-     * @param path Path in repository
+     * @param path        Path in repository
      * @param contentType Content type
      * @return return a build query
      */
@@ -66,9 +67,9 @@ public final class JcrUtils {
     }
 
     /**
-     * @param path Path in repository
-     * @param contentType Content type
-     * @param useFilters Boolean use fileter
+     * @param path          Path in repository
+     * @param contentType   Content type
+     * @param useFilters    Boolean use fileter
      * @param customFilters Custom filters
      * @return A jcr query.
      */
@@ -92,7 +93,7 @@ public final class JcrUtils {
     }
 
     /**
-     * @param filterProperty Filter property
+     * @param filterProperty   Filter property
      * @param filterIdentifier Filter Identifier
      * @return A blog count query.
      */
