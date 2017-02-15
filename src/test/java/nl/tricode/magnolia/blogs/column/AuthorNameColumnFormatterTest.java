@@ -37,10 +37,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -54,6 +56,8 @@ public class AuthorNameColumnFormatterTest {
     @Mock
     private WebContext mockWebContext;
     @Mock
+    private Session mockSession;
+    @Mock
     private Table mockTable;
 
     @Before
@@ -64,7 +68,7 @@ public class AuthorNameColumnFormatterTest {
     }
 
     @Test
-    public void testGenerateCellWithUnknownId() throws Exception {
+    public void generateCellWithUnknownId() throws Exception {
         Object itemId = "1";
 
         Object result = formatter.generateCell(mockTable, itemId, null);
@@ -72,7 +76,7 @@ public class AuthorNameColumnFormatterTest {
     }
 
     @Test
-    public void testGenerateCellWithProperty() throws Exception {
+    public void generateCellWithProperty() throws Exception {
         Object itemId = "1";
 
         JcrItemAdapter mockItem = mock(JcrItemAdapter.class);
@@ -87,7 +91,7 @@ public class AuthorNameColumnFormatterTest {
     }
 
     @Test
-    public void testGenerateCellWithoutBlogNode() throws Exception {
+    public void generateCellWithoutBlogNode() throws Exception {
         Object itemId = "1";
 
         JcrItemAdapter mockItem = mock(JcrItemAdapter.class);
@@ -104,7 +108,7 @@ public class AuthorNameColumnFormatterTest {
     }
 
     @Test
-    public void testGenerateCellWithBlogNodeWithoutAuthorId() throws Exception {
+    public void generateCellWithBlogNodeWithoutAuthorId() throws Exception {
         Object itemId = "1";
 
         JcrItemAdapter mockItem = mock(JcrItemAdapter.class);
@@ -121,7 +125,7 @@ public class AuthorNameColumnFormatterTest {
     }
 
     @Test
-    public void testGenerateCellWithBlogNodeWithEmptyAuthorId() throws Exception {
+    public void generateCellWithBlogNodeWithEmptyAuthorId() throws Exception {
         Object itemId = "1";
 
         JcrItemAdapter mockItem = mock(JcrItemAdapter.class);
@@ -139,7 +143,7 @@ public class AuthorNameColumnFormatterTest {
     }
 
     @Test
-    public void testGenerateCellWithBlogNodeWithoutAuthor() throws Exception {
+    public void generateCellWithBlogNodeWithNonExistingAuthor() throws Exception {
         Object itemId = "1";
         String authorId = "123";
 
@@ -150,6 +154,8 @@ public class AuthorNameColumnFormatterTest {
         doReturn(mockNode).when(mockItem).getJcrItem();
         doReturn(true).when(mockItem).isNode();
         doReturn(true).when(mockNode).isNode();
+        doReturn(mockSession).when(mockWebContext).getJCRSession(BlogRepositoryConstants.CONTACTS);
+        doThrow(RepositoryException.class).when(mockSession).getNodeByIdentifier(authorId);
         doReturnIsNodeType(mockNode, BlogsNodeTypes.Blog.NAME);
         doReturnProperty(mockNode, BlogsNodeTypes.Blog.PROPERTY_AUTHOR, authorId);
 
@@ -158,7 +164,7 @@ public class AuthorNameColumnFormatterTest {
     }
 
     @Test
-    public void testGenerateCellWithBlogNodeWithFullAuthorName() throws Exception {
+    public void generateCellWithBlogNodeWithFullAuthorName() throws Exception {
         Object itemId = "1";
         String authorId = "123";
         String firstName = "hans";
@@ -188,7 +194,7 @@ public class AuthorNameColumnFormatterTest {
     }
 
     @Test
-    public void testGenerateCellWithBlogNodeWithOnlyFirstName() throws Exception {
+    public void generateCellWithBlogNodeWithOnlyFirstName() throws Exception {
         Object itemId = "1";
         String authorId = "123";
         String firstName = "hans";
@@ -216,7 +222,7 @@ public class AuthorNameColumnFormatterTest {
     }
 
     @Test
-    public void testGenerateCellWithBlogNodeWithOnlyLastName() throws Exception {
+    public void generateCellWithBlogNodeWithOnlyLastName() throws Exception {
         Object itemId = "1";
         String authorId = "123";
         String lastName = "de boer";
@@ -244,7 +250,7 @@ public class AuthorNameColumnFormatterTest {
     }
 
     @Test
-    public void testGenerateCellWithBlogNodeWithEmptyAuthorNameIsTrimmed() throws Exception {
+    public void generateCellWithBlogNodeWithEmptyAuthorNameIsTrimmed() throws Exception {
         Object itemId = "1";
         String authorId = "123";
 
