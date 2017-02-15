@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import javax.jcr.Item;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import java.util.Optional;
 
 /**
  * Column formatter that displays either the name of a contact or a folder.
@@ -62,21 +63,33 @@ public class AuthorNameColumnFormatter extends AbstractColumnFormatter<PropertyC
 
                     // Find author in contacts and return first name and last name
                     if (StringUtils.isNotEmpty(authorId)) {
-                        final Node author = NodeUtil.getNodeByIdentifier(BlogRepositoryConstants.CONTACTS, authorId);
+                        final Optional<Node> authorOptional = readAuthorDetails(authorId);
 
-                        final StringBuilder nameBuilder = new StringBuilder();
-                        nameBuilder.append(PropertyUtil.getString(author, ContactsNodeTypes.Contact.PROPERTY_FIRST_NAME, StringUtils.EMPTY));
-                        nameBuilder.append(BlogStringUtils.SPACE);
-                        nameBuilder.append(PropertyUtil.getString(author, ContactsNodeTypes.Contact.PROPERTY_LAST_NAME, StringUtils.EMPTY));
-                        return nameBuilder.toString().trim();
+                        if (authorOptional.isPresent()) {
+                            final Node author = authorOptional.get();
+                            final StringBuilder nameBuilder = new StringBuilder();
+                            nameBuilder.append(PropertyUtil.getString(author, ContactsNodeTypes.Contact.PROPERTY_FIRST_NAME, StringUtils.EMPTY));
+                            nameBuilder.append(BlogStringUtils.SPACE);
+                            nameBuilder.append(PropertyUtil.getString(author, ContactsNodeTypes.Contact.PROPERTY_LAST_NAME, StringUtils.EMPTY));
+                            return nameBuilder.toString().trim();
+                        }
                     }
                 }
             } catch (RepositoryException e) {
-                LOGGER.warn("Unable to get name of contact for column", e);
+                LOGGER.warn("Unable to determine node type", e);
             }
         }
 
         return StringUtils.EMPTY;
+    }
+
+    private static Optional<Node> readAuthorDetails(final String authorId) {
+        try {
+            return Optional.of(NodeUtil.getNodeByIdentifier(BlogRepositoryConstants.CONTACTS, authorId));
+        } catch (RepositoryException e) {
+            LOGGER.warn("Referenced authorId not found: {}", authorId);
+            return Optional.empty();
+        }
     }
 
 }
