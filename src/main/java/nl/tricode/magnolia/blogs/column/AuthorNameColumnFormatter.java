@@ -26,7 +26,6 @@ import info.magnolia.ui.workbench.column.AbstractColumnFormatter;
 import info.magnolia.ui.workbench.column.definition.PropertyColumnDefinition;
 import nl.tricode.magnolia.blogs.BlogsNodeTypes;
 import nl.tricode.magnolia.blogs.util.BlogRepositoryConstants;
-import nl.tricode.magnolia.blogs.util.BlogStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +68,7 @@ public class AuthorNameColumnFormatter extends AbstractColumnFormatter<PropertyC
                             final Node author = authorOptional.get();
                             final StringBuilder nameBuilder = new StringBuilder();
                             nameBuilder.append(PropertyUtil.getString(author, ContactsNodeTypes.Contact.PROPERTY_FIRST_NAME, StringUtils.EMPTY));
-                            nameBuilder.append(BlogStringUtils.SPACE);
+                            nameBuilder.append(" ");
                             nameBuilder.append(PropertyUtil.getString(author, ContactsNodeTypes.Contact.PROPERTY_LAST_NAME, StringUtils.EMPTY));
                             return nameBuilder.toString().trim();
                         }

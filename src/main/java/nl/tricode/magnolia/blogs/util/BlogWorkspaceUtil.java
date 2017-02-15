@@ -55,7 +55,7 @@ public final class BlogWorkspaceUtil {
      */
     private static String filterNonWordCharacters(final String input) {
         final String output = input.trim();
-        return output.replaceAll("[^\\w\\s\\-]", StringUtils.EMPTY).replaceAll("\\s+", BlogStringUtils.HYPHEN);
+        return output.replaceAll("[^\\w\\s\\-]", StringUtils.EMPTY).replaceAll("\\s+", "-");
     }
 
     /**
