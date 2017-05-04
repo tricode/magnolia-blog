@@ -14,7 +14,8 @@
     </organization>
 
     <properties>
-        <magnoliaVersion>5.5.1</magnoliaVersion>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <magnoliaVersion>5.5.3</magnoliaVersion>
         <junitVersion>4.12</junitVersion>
         <javaVersion>1.8</javaVersion>
     </properties>
@@ -173,12 +174,12 @@
         <repository>
             <id>tricode-magnolia-releases</id>
             <name>Tricode Magnolia Releases</name>
-            <url>http://repo.tricode.nl/content/repositories/magnolia_github_releases/</url>
+            <url>http://artifacts.tricode.nl/content/repositories/magnolia_github_releases/</url>
         </repository>
         <snapshotRepository>
             <id>tricode-magnolia-snapshots</id>
             <name>Tricode Magnolia Snapshots</name>
-            <url>http://repo.tricode.nl/content/repositories/magnolia_github_snapshots/</url>
+            <url>http://artifacts.tricode.nl/content/repositories/magnolia_github_snapshots/</url>
             <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
