@@ -47,3 +47,6 @@ Copyright (c) 2015 Tricode and contributors. Released under a [GNUv3 license](ht
 
 ##Release notes 1.1.9
 * Prevent huge stacktraces in logs when blog authorId is not found
+
+##Release notes 1.1.10
+* Update to Magnolia 5.5.3 + Nexus URL update
